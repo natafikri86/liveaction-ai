@@ -3,435 +3,907 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101827">
-<title>LiveAction AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiveAction AI — Film Creation Studio</title>
+
 <style>
 :root {
-  --bg:#101827;--panel:#1b2638;--panel2:#243249;
-  --text:#f8fafc;--muted:#aab8ca;--blue:#3b82f6;
-  --border:#334155;--green:#34d399;
+  --bg: #0b1120;
+  --panel: #172338;
+  --panel2: #202f49;
+  --blue: #3478f6;
+  --purple: #3932a0;
+  --text: #f3f6ff;
+  --muted: #aab7cc;
+  --green: #48c99a;
+  --border: #34445f;
+  --red: #ef6464;
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-header{padding:16px;background:#172235;border-bottom:1px solid var(--border)}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--blue);font-size:23px}
-.brand h1{font-size:19px;margin:0}
-.brand small{color:var(--muted)}
-main{max-width:900px;margin:auto;padding:18px 15px 100px}
-.welcome{padding:23px;border-radius:18px;background:linear-gradient(135deg,#1e3a8a,#312e81);margin-bottom:22px}
-.welcome h2{font-size:25px;margin:0 0 10px}
-.welcome p{color:#dbeafe;line-height:1.6}
-button{border:0;border-radius:10px;padding:12px 15px;background:var(--blue);color:white;font-weight:bold;cursor:pointer}
-button.secondary{background:var(--panel2)}
-button.danger{background:#991b1b}
-input,textarea,select{width:100%;padding:13px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin:8px 0 14px;font:inherit}
-textarea{min-height:100px;resize:vertical}
-label{display:block;color:var(--muted);font-size:13px;margin-top:8px}
-.section-title{display:flex;justify-content:space-between;align-items:center;margin:25px 0 14px}
-.section-title h2{font-size:19px;margin:0}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;min-height:125px}
-.card .symbol{font-size:25px;margin-bottom:12px}
-.card h3{font-size:15px;margin:0 0 7px}
-.card p{font-size:12px;line-height:1.5;color:var(--muted);margin:0}
-.project-list{display:grid;gap:10px}
-.project{background:var(--panel);border:1px solid var(--border);padding:15px;border-radius:12px}
-.project strong{display:block;margin-bottom:6px}
-.project small{color:var(--muted)}
-.empty{color:var(--muted);text-align:center;padding:25px;background:var(--panel);border-radius:12px}
-footer{text-align:center;padding:25px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#172235;border-top:1px solid var(--border);padding:10px 5px;z-index:10}
-nav a{color:var(--muted);text-decoration:none;font-size:12px;text-align:center}
-nav span{display:block;font-size:20px;margin-bottom:4px}
-.modal{display:none;position:fixed;inset:0;background:#000b;z-index:20;align-items:center;justify-content:center;padding:20px}
-.modal-box{background:var(--panel);padding:20px;border-radius:16px;width:100%;max-width:420px;max-height:85vh;overflow:auto}
-.modal-box h2{margin-top:0}
-.detail-head{background:linear-gradient(135deg,#1e3a8a,#312e81);padding:20px;border-radius:16px;margin-bottom:18px}
-.detail-head h2{margin:10px 0}
-.back{background:var(--panel2);margin-bottom:15px}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px}
-.tabs button{white-space:nowrap;background:var(--panel2)}
-.tabs button.active{background:var(--blue)}
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
-.panel h3{margin-top:0}
-.item{padding:13px 0;border-bottom:1px solid var(--border)}
-.item:last-child{border:0}
-.item strong{display:block;margin-bottom:6px}
-.item p{color:var(--muted);white-space:pre-wrap;line-height:1.5;margin:5px 0}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.hidden{display:none!important}
-.status{color:var(--green);font-size:13px}
-@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+header {
+  padding: 22px 18px;
+  background: #172338;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.logo {
+  background: var(--blue);
+  border-radius: 17px;
+  width: 65px;
+  height: 65px;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.brand p {
+  color: var(--muted);
+  margin: 5px 0 0;
+}
+
+.creator {
+  color: var(--green);
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 22px 16px 110px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+.muted {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.hero {
+  background: linear-gradient(130deg, #263fa0, #39308f);
+  padding: 28px;
+  border-radius: 22px;
+  margin-bottom: 24px;
+}
+
+.hero h2 {
+  font-size: 30px;
+  margin: 12px 0;
+}
+
+.hero p {
+  color: #dce4ff;
+  line-height: 1.6;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+button.primary {
+  background: var(--blue);
+  color: white;
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 18px;
+  font-weight: bold;
+}
+
+button.secondary {
+  background: var(--panel2);
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+button.danger {
+  background: #572b38;
+  color: #ffd8df;
+  border: 1px solid #8b4253;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+button:active {
+  transform: scale(.98);
+}
+
+input, textarea, select {
+  width: 100%;
+  background: #0d1628;
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin: 8px 0 18px;
+  outline: none;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--blue);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+label {
+  display: block;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+.project-card {
+  background: linear-gradient(130deg, #263fa0, #39308f);
+  border-radius: 18px;
+  padding: 22px;
+  margin: 14px 0;
+  cursor: pointer;
+}
+
+.project-card h3 {
+  font-size: 22px;
+  margin: 8px 0;
+}
+
+.project-card small {
+  color: #d4ddff;
+}
+
+.status {
+  color: var(--green);
+  margin-top: 16px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 8px 0 18px;
+  scrollbar-width: thin;
+}
+
+.tab {
+  flex: 0 0 auto;
+  background: var(--panel2);
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 14px 18px;
+  font-weight: bold;
+}
+
+.tab.active {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.item {
+  background: #101a2c;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.item h3 {
+  margin-top: 0;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.row > * {
+  flex: 1;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #172338;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 4px;
+  z-index: 10;
+}
+
+.bottom-nav button {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 12px;
+  min-width: 60px;
+}
+
+.bottom-nav span {
+  display: block;
+  font-size: 23px;
+  margin-bottom: 4px;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 22px 12px 110px;
+  font-size: 13px;
+}
+
+.notice {
+  background: #173b36;
+  border: 1px solid #286d5b;
+  color: #b9f5df;
+  padding: 14px;
+  border-radius: 12px;
+  margin: 14px 0;
+  line-height: 1.5;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 30px 10px;
+}
+
+@media (min-width: 700px) {
+  main {
+    padding-top: 35px;
+  }
+  .hero h2 {
+    font-size: 38px;
+  }
+}
 </style>
 </head>
+
 <body>
 
 <header>
   <div class="brand">
     <div class="logo">🎬</div>
-    <div><h1>LiveAction AI</h1><small>Film Creation Studio</small></div>
-    <p style="color: #48c99a; font-size: 16px; margin-top: 8px;">
-  Created by Ibrohim Alvaro
-</p>
+    <div>
+      <h1>LiveAction AI</h1>
+      <p>Film Creation Studio</p>
+      <div class="creator">Created by Ibrohim Alvaro</div>
+    </div>
   </div>
 </header>
 
 <main>
-  <section id="homeView">
-    <section class="welcome">
-      <h2>Selamat datang di studio film kamu</h2>
-      <p>Kembangkan ide menjadi cerita, karakter, episode, dan produksi film dalam satu tempat.</p>
-      <button onclick="openModal()">＋ Buat Proyek Baru</button>
-    </section>
 
-    <div class="section-title"><h2>Studio Produksi</h2></div>
-    <section class="grid">
-      <div class="card"><div class="symbol">📁</div><h3>Projects</h3><p>Kelola semua proyek film.</p></div>
-      <div class="card"><div class="symbol">👥</div><h3>Characters</h3><p>Database dan referensi karakter.</p></div>
-      <div class="card"><div class="symbol">📖</div><h3>Story Memory</h3><p>Jaga kesinambungan cerita.</p></div>
-      <div class="card"><div class="symbol">✨</div><h3>Story Transformation</h3><p>Ubah ide menjadi cerita terstruktur.</p></div>
-      <div class="card"><div class="symbol">🧠</div><h3>Creative Enhancement</h3><p>Kembangkan konflik, emosi, dan dialog.</p></div>
-      <div class="card"><div class="symbol">🎥</div><h3>Action Scenes</h3><p>Rancang adegan aksi sinematik.</p></div>
-      <div class="card"><div class="symbol">🎙️</div><h3>Audio Studio</h3><p>Kelola dialog, suara, dan musik.</p></div>
-      <div class="card"><div class="symbol">💬</div><h3>Subtitles</h3><p>Siapkan subtitle multibahasa.</p></div>
-      <div class="card"><div class="symbol">🎞️</div><h3>Production</h3><p>Persiapan dan hasil produksi.</p></div>
-      <div class="card"><div class="symbol">⚙️</div><h3>Settings</h3><p>Pengaturan studio.</p></div>
-    </section>
+<!-- HOME -->
+<section id="homePage">
+  <div class="hero">
+    <div>SELAMAT DATANG DI STUDIO</div>
+    <h2>Wujudkan Cerita Menjadi Film</h2>
+    <p>
+      Ruang kerja untuk merancang cerita, membangun karakter,
+      menyusun episode, dan mempersiapkan produksi film.
+    </p>
+    <button class="primary" onclick="showPage('projectsPage')">
+      🎬 Mulai Membuat Film
+    </button>
+  </div>
 
-    <div class="section-title"><h2>Proyek Saya</h2><button class="secondary" onclick="openModal()">＋</button></div>
-    <section id="projects" class="project-list"></section>
-  </section>
+  <div class="panel">
+    <h2>Studio Kreatif</h2>
+    <p class="muted">
+      Bangun dunia cerita, simpan detail tokoh, dan susun perjalanan
+      film dalam satu tempat.
+    </p>
+    <div class="notice">
+      Data proyek saat ini disimpan di browser perangkat ini.
+      Jangan hapus data browser jika ingin mempertahankan proyek.
+    </div>
+  </div>
 
-  <section id="detailView" class="hidden">
-    <button class="back" onclick="goHome()">← Kembali ke Proyek</button>
-    <div class="detail-head">
-      <small>RUANG KERJA PROYEK</small>
-      <h2 id="detailName"></h2>
-      <p id="detailDate"></p>
-      <span class="status">● Tersimpan di perangkat</span>
+  <div class="panel">
+    <h2>Identitas Studio</h2>
+    <p><strong>LiveAction AI</strong></p>
+    <p class="muted">Created by Ibrohim Alvaro</p>
+    <p class="muted">Owned & Developed by Nata_F</p>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projectsPage" class="hidden">
+  <h2>📁 Proyek Film</h2>
+  <p class="muted">Buat dan kelola ide film atau serialmu.</p>
+
+  <div class="panel">
+    <h3>Buat Proyek Baru</h3>
+    <label>Judul film atau serial</label>
+    <input id="newTitle" placeholder="Contoh: Petualangan di Masa Depan">
+
+    <label>Genre</label>
+    <input id="newGenre" placeholder="Drama, aksi, fantasi...">
+
+    <label>Deskripsi singkat</label>
+    <textarea id="newDescription" placeholder="Ceritakan ide awal film..."></textarea>
+
+    <button class="primary" onclick="createProject()">＋ Buat Proyek</button>
+  </div>
+
+  <h3>Daftar Proyek</h3>
+  <div id="projectList"></div>
+</section>
+
+<!-- DETAIL -->
+<section id="detailPage" class="hidden">
+  <button class="secondary" onclick="showPage('projectsPage')">
+    ← Kembali ke Proyek
+  </button>
+
+  <div class="hero" style="margin-top:20px">
+    <div>RUANG KERJA PROYEK</div>
+    <h2 id="detailTitle"></h2>
+    <p id="detailDate"></p>
+    <div class="status">● Tersimpan di perangkat</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="info" onclick="openTab('info')">Informasi</button>
+    <button class="tab" data-tab="story" onclick="openTab('story')">Story Memory</button>
+    <button class="tab" data-tab="characters" onclick="openTab('characters')">Characters</button>
+    <button class="tab" data-tab="episodes" onclick="openTab('episodes')">Episodes</button>
+    <button class="tab" data-tab="production" onclick="openTab('production')">Production</button>
+  </div>
+
+  <div id="tab-info" class="panel">
+    <h2>Informasi Proyek</h2>
+    <label>Judul film atau serial</label>
+    <input id="editTitle">
+
+    <label>Genre</label>
+    <input id="editGenre" placeholder="Drama, aksi, fantasi...">
+
+    <label>Deskripsi</label>
+    <textarea id="editDescription"></textarea>
+
+    <button class="primary" onclick="saveInfo()">Simpan Informasi</button>
+  </div>
+
+  <div id="tab-story" class="panel hidden">
+    <h2>Story Memory</h2>
+    <p class="muted">
+      Simpan catatan utama agar dunia dan alur cerita tetap konsisten.
+    </p>
+
+    <label>Sinopsis</label>
+    <textarea id="storySynopsis" placeholder="Tuliskan ringkasan cerita..."></textarea>
+
+    <label>Dunia dan latar cerita</label>
+    <textarea id="storyWorld" placeholder="Tempat, waktu, budaya, dan suasana cerita..."></textarea>
+
+    <label>Aturan dunia cerita</label>
+    <textarea id="storyRules" placeholder="Aturan khusus yang berlaku di dunia cerita..."></textarea>
+
+    <label>Urutan peristiwa penting</label>
+    <textarea id="storyEvents" placeholder="Catat kejadian penting secara berurutan..."></textarea>
+
+    <label>Catatan kesinambungan</label>
+    <textarea id="storyContinuity" placeholder="Hal yang harus diingat pada bagian berikutnya..."></textarea>
+
+    <button class="primary" onclick="saveStory()">Simpan Story Memory</button>
+  </div>
+
+  <div id="tab-characters" class="panel hidden">
+    <h2>Characters</h2>
+    <p class="muted">
+      Catat identitas dan ciri tokoh agar deskripsinya mudah dijaga
+      tetap konsisten saat proses kreatif.
+    </p>
+
+    <label>Nama karakter</label>
+    <input id="charName" placeholder="Nama tokoh">
+
+    <label>Usia</label>
+    <input id="charAge" placeholder="Usia tokoh">
+
+    <label>Penampilan fisik</label>
+    <textarea id="charAppearance" placeholder="Rambut, wajah, pakaian, tinggi badan..."></textarea>
+
+    <label>Kepribadian</label>
+    <textarea id="charPersonality" placeholder="Sifat dan kebiasaan tokoh..."></textarea>
+
+    <label>Latar belakang</label>
+    <textarea id="charBackground" placeholder="Asal-usul dan kisah hidup tokoh..."></textarea>
+
+    <button class="primary" onclick="addCharacter()">＋ Tambahkan Karakter</button>
+
+    <h3>Daftar Karakter</h3>
+    <div id="characterList"></div>
+  </div>
+
+  <div id="tab-episodes" class="panel hidden">
+    <h2>Episodes</h2>
+    <p class="muted">Susun cerita menjadi bagian atau episode.</p>
+
+    <label>Judul episode</label>
+    <input id="episodeTitle" placeholder="Episode 1 — Awal Perjalanan">
+
+    <label>Ringkasan episode</label>
+    <textarea id="episodeSummary" placeholder="Apa yang terjadi dalam episode ini?"></textarea>
+
+    <label>Catatan akhir episode</label>
+    <textarea id="episodeEnding" placeholder="Peristiwa yang menghubungkan ke episode berikutnya..."></textarea>
+
+    <button class="primary" onclick="addEpisode()">＋ Tambahkan Episode</button>
+
+    <h3>Daftar Episode</h3>
+    <div id="episodeList"></div>
+  </div>
+
+  <div id="tab-production" class="panel hidden">
+    <h2>Production</h2>
+    <p class="muted">
+      Persiapkan kebutuhan produksi dan catatan teknis proyek.
+    </p>
+
+    <label>Gaya visual</label>
+    <textarea id="prodVisual" placeholder="Contoh: sinematik, realistis, pencahayaan hangat..."></textarea>
+
+    <label>Bahasa dialog</label>
+    <input id="prodLanguage" placeholder="Contoh: Indonesia">
+
+    <label>Target resolusi</label>
+    <select id="prodResolution">
+      <option>720p</option>
+      <option selected>1080p</option>
+      <option>4K</option>
+    </select>
+
+    <label>Catatan produksi</label>
+    <textarea id="prodNotes" placeholder="Musik, suara, lokasi, kebutuhan khusus..."></textarea>
+
+    <button class="primary" onclick="saveProduction()">Simpan Rencana Produksi</button>
+
+    <div class="notice">
+      Pengaturan di halaman ini merupakan catatan rencana.
+      Proses pembuatan video, audio, dubbing, dan rendering belum
+      terhubung ke mesin produksi AI.
     </div>
 
-    <div class="tabs">
-      <button id="tab-info" onclick="showTab('info')">Informasi</button>
-      <button id="tab-story" onclick="showTab('story')">Story Memory</button>
-      <button id="tab-characters" onclick="showTab('characters')">Characters</button>
-      <button id="tab-episodes" onclick="showTab('episodes')">Episodes</button>
-      <button id="tab-production" onclick="showTab('production')">Production</button>
-    </div>
+    <button class="danger" onclick="deleteCurrentProject()">Hapus Proyek Ini</button>
+  </div>
+</section>
 
-    <section id="content-info" class="panel">
-      <h3>Informasi Proyek</h3>
-      <label>Judul film atau serial</label>
-      <input id="editName" placeholder="Judul proyek">
-      <label>Genre</label>
-      <input id="editGenre" placeholder="Contoh: Drama, Aksi, Fantasi">
-      <label>Deskripsi singkat</label>
-      <textarea id="editDescription" placeholder="Ceritakan gambaran proyek ini..."></textarea>
-      <button onclick="saveInfo()">Simpan Informasi</button>
-    </section>
-
-    <section id="content-story" class="panel hidden">
-      <h3>Story Memory</h3>
-      <p style="color:var(--muted)">Simpan catatan utama agar dunia dan alur cerita tetap konsisten.</p>
-      <label>Sinopsis</label>
-      <textarea id="storySynopsis" placeholder="Ringkasan cerita..."></textarea>
-      <label>Dunia dan latar cerita</label>
-      <textarea id="storyWorld" placeholder="Tempat, waktu, dan kondisi dunia cerita..."></textarea>
-      <label>Aturan dunia cerita</label>
-      <textarea id="storyRules" placeholder="Aturan atau fakta yang tidak boleh berubah..."></textarea>
-      <label>Urutan peristiwa penting</label>
-      <textarea id="storyEvents" placeholder="Peristiwa dari awal hingga akhir..."></textarea>
-      <label>Catatan kesinambungan</label>
-      <textarea id="storyNotes" placeholder="Hal-hal yang harus diingat..."></textarea>
-      <button onclick="saveStory()">Simpan Story Memory</button>
-    </section>
-
-    <section id="content-characters" class="hidden">
-      <div class="panel">
-        <h3>Character Database</h3>
-        <label>Nama karakter</label>
-        <input id="charName" placeholder="Nama karakter">
-        <label>Penampilan fisik</label>
-        <textarea id="charAppearance" placeholder="Usia, wajah, rambut, pakaian, ciri khas..."></textarea>
-        <label>Kepribadian</label>
-        <textarea id="charPersonality" placeholder="Sifat dan cara bertindak..."></textarea>
-        <label>Suara dan cara bicara</label>
-        <textarea id="charVoice" placeholder="Karakter suara, aksen, intonasi..."></textarea>
-        <label>Hubungan dan perkembangan</label>
-        <textarea id="charRelations" placeholder="Hubungan dengan tokoh lain dan perkembangan karakter..."></textarea>
-        <button onclick="addCharacter()">＋ Simpan Karakter</button>
-      </div>
-      <div class="panel"><h3>Daftar Karakter</h3><div id="characterList"></div></div>
-    </section>
-
-    <section id="content-episodes" class="hidden">
-      <div class="panel">
-        <h3>Tambah Episode</h3>
-        <label>Judul episode</label>
-        <input id="episodeName" placeholder="Episode 1 — Awal Perjalanan">
-        <label>Ringkasan episode</label>
-        <textarea id="episodeSummary" placeholder="Apa yang terjadi dalam episode ini?"></textarea>
-        <label>Karakter yang muncul</label>
-        <input id="episodeCharacters" placeholder="Nama karakter, pisahkan dengan koma">
-        <label>Catatan kesinambungan</label>
-        <textarea id="episodeNotes" placeholder="Hal yang harus berlanjut ke episode berikutnya..."></textarea>
-        <button onclick="addEpisode()">＋ Simpan Episode</button>
-      </div>
-      <div class="panel"><h3>Daftar Episode</h3><div id="episodeList"></div></div>
-    </section>
-
-    <section id="content-production" class="panel hidden">
-      <h3>Catatan Produksi</h3>
-      <p style="color:var(--muted)">Ruang untuk mencatat rencana produksi, kebutuhan, dan kemajuan proyek.</p>
-      <label>Status produksi</label>
-      <select id="productionStatus">
-        <option>Dalam pengembangan</option>
-        <option>Pra-produksi</option>
-        <option>Produksi</option>
-        <option>Pasca-produksi</option>
-        <option>Selesai</option>
-      </select>
-      <label>Catatan</label>
-      <textarea id="productionNotes" placeholder="Catatan produksi..."></textarea>
-      <button onclick="saveProduction()">Simpan Catatan</button>
-    </section>
-  </section>
 </main>
 
-<footer>Owned &amp; Developed by Nata_F<br>LiveAction AI — Film Creation Studio</footer>
+<footer>
+  <strong>LiveAction AI — Film Creation Studio</strong><br>
+  Created by Ibrohim Alvaro<br>
+  Owned & Developed by Nata_F
+</footer>
 
-<nav>
-  <a href="#" onclick="goHome()"><span>🏠</span>Home</a>
-  <a href="#projects" onclick="goHome()"><span>📁</span>Projects</a>
-  <a href="#projects" onclick="goHome()"><span>👥</span>Characters</a>
-  <a href="#projects" onclick="goHome()"><span>📖</span>Story</a>
+<nav class="bottom-nav">
+  <button onclick="showPage('homePage')"><span>🏠</span>Home</button>
+  <button onclick="showPage('projectsPage')"><span>📁</span>Projects</button>
+  <button onclick="showPage('projectsPage')"><span>👥</span>Characters</button>
+  <button onclick="showPage('projectsPage')"><span>📖</span>Story</button>
 </nav>
 
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h2>Buat Proyek Baru</h2>
-    <p style="color:var(--muted)">Masukkan nama proyek film kamu.</p>
-    <input id="projectName" placeholder="Contoh: Kisah di Ujung Senja">
-    <button onclick="addProject()">Simpan Proyek</button>
-    <button class="secondary" onclick="closeModal()">Batal</button>
-  </div>
-</div>
-
 <script>
-const storageKey="liveaction_ai_projects_v1";
-let projects=[];
-let currentId=null;
+const STORAGE_KEY = "liveaction_ai_projects_v2";
 
-try{
-  projects=JSON.parse(localStorage.getItem(storageKey)||"[]");
-  if(!Array.isArray(projects))projects=[];
-}catch(e){projects=[]}
+let projects = [];
+let currentId = null;
 
-projects=projects.map((p,i)=>({
-  id:p.id||("project_"+i+"_"+Date.now()),
-  name:p.name||"Proyek Tanpa Nama",
-  date:p.date||new Date().toLocaleDateString("id-ID"),
-  genre:p.genre||"",
-  description:p.description||"",
-  story:p.story||{synopsis:"",world:"",rules:"",events:"",notes:""},
-  characters:Array.isArray(p.characters)?p.characters:[],
-  episodes:Array.isArray(p.episodes)?p.episodes:[],
-  production:p.production||{status:"Dalam pengembangan",notes:""}
-}));
-saveProjects();
+function loadProjects() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    projects = saved ? JSON.parse(saved) : [];
+    if (!Array.isArray(projects)) projects = [];
+  } catch (error) {
+    projects = [];
+  }
 
-function saveProjects(){
-  localStorage.setItem(storageKey,JSON.stringify(projects));
+  // Migrasi data proyek dari versi sebelumnya.
+  projects = projects.map((p, index) => ({
+    id: p.id || String(Date.now() + index),
+    title: p.title || p.name || "Proyek Tanpa Judul",
+    genre: p.genre || "",
+    description: p.description || "",
+    date: p.date || new Date().toLocaleDateString("id-ID"),
+    story: p.story || {
+      synopsis: "",
+      world: "",
+      rules: "",
+      events: "",
+      continuity: ""
+    },
+    characters: Array.isArray(p.characters) ? p.characters : [],
+    episodes: Array.isArray(p.episodes) ? p.episodes : [],
+    production: p.production || {
+      visual: "",
+      language: "",
+      resolution: "1080p",
+      notes: ""
+    }
+  }));
+
+  saveAll();
 }
 
-function escapeHTML(value){
-  return String(value??"").replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
+function saveAll() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
 }
 
-function renderProjects(){
-  const container=document.getElementById("projects");
-  if(!projects.length){
-    container.innerHTML='<div class="empty">Belum ada proyek. Tekan Buat Proyek Baru untuk memulai.</div>';
+function showPage(pageId) {
+  document.querySelectorAll("main > section").forEach(section => {
+    section.classList.add("hidden");
+  });
+
+  document.getElementById(pageId).classList.remove("hidden");
+
+  if (pageId === "projectsPage") renderProjects();
+
+  window.scrollTo(0, 0);
+}
+
+function createProject() {
+  const title = document.getElementById("newTitle").value.trim();
+
+  if (!title) {
+    alert("Masukkan judul proyek terlebih dahulu.");
     return;
   }
-  container.innerHTML=projects.map(p=>`
-    <div class="project">
-      <strong>🎬 ${escapeHTML(p.name)}</strong>
-      <small>Dibuat: ${escapeHTML(p.date)}</small>
-      <div class="actions">
-        <button onclick="openProject('${p.id}')">Buka Proyek →</button>
-        <button class="danger" onclick="deleteProject('${p.id}')">Hapus</button>
-      </div>
-    </div>`).join("");
+
+  const project = {
+    id: String(Date.now()) + Math.random().toString(16).slice(2),
+    title,
+    genre: document.getElementById("newGenre").value.trim(),
+    description: document.getElementById("newDescription").value.trim(),
+    date: new Date().toLocaleDateString("id-ID"),
+    story: {
+      synopsis: "",
+      world: "",
+      rules: "",
+      events: "",
+      continuity: ""
+    },
+    characters: [],
+    episodes: [],
+    production: {
+      visual: "",
+      language: "",
+      resolution: "1080p",
+      notes: ""
+    }
+  };
+
+  projects.unshift(project);
+  saveAll();
+
+  document.getElementById("newTitle").value = "";
+  document.getElementById("newGenre").value = "";
+  document.getElementById("newDescription").value = "";
+
+  renderProjects();
+  openProject(project.id);
 }
 
-function openModal(){
-  document.getElementById("modal").style.display="flex";
-  document.getElementById("projectName").focus();
+function renderProjects() {
+  const list = document.getElementById("projectList");
+
+  if (projects.length === 0) {
+    list.innerHTML = '<div class="empty">Belum ada proyek. Buat proyek pertamamu!</div>';
+    return;
+  }
+
+  list.innerHTML = projects.map(p => `
+    <div class="project-card" onclick="openProject('${p.id}')">
+      <small>RUANG KERJA PROYEK</small>
+      <h3>${escapeHTML(p.title)}</h3>
+      <p>${escapeHTML(p.genre || "Genre belum ditentukan")}</p>
+      <small>Dibuat: ${escapeHTML(p.date)}</small>
+      <div class="status">● Tersimpan di perangkat</div>
+    </div>
+  `).join("");
 }
-function closeModal(){
-  document.getElementById("modal").style.display="none";
+
+function openProject(id) {
+  currentId = id;
+  const p = getCurrent();
+
+  if (!p) return;
+
+  document.getElementById("detailTitle").textContent = p.title;
+  document.getElementById("detailDate").textContent = "Dibuat: " + p.date;
+
+  document.getElementById("editTitle").value = p.title;
+  document.getElementById("editGenre").value = p.genre;
+  document.getElementById("editDescription").value = p.description;
+
+  fillStory();
+  fillProduction();
+  renderCharacters();
+  renderEpisodes();
+
+  showPage("detailPage");
+  openTab("info");
 }
-function addProject(){
-  const input=document.getElementById("projectName");
-  const name=input.value.trim();
-  if(!name){alert("Masukkan nama proyek terlebih dahulu.");return}
-  const project={
-    id:"project_"+Date.now()+"_"+Math.random().toString(36).slice(2,8),
-    name,date:new Date().toLocaleDateString("id-ID"),
-    genre:"",description:"",
-    story:{synopsis:"",world:"",rules:"",events:"",notes:""},
-    characters:[],episodes:[],
-    production:{status:"Dalam pengembangan",notes:""}
-  };
-  projects.push(project);
-  saveProjects();renderProjects();input.value="";closeModal();
+
+function getCurrent() {
+  return projects.find(p => p.id === currentId);
 }
-function deleteProject(id){
-  if(!confirm("Yakin ingin menghapus proyek ini?"))return;
-  projects=projects.filter(p=>p.id!==id);
-  saveProjects();renderProjects();
-}
-function getCurrent(){
-  return projects.find(p=>p.id===currentId);
-}
-function openProject(id){
-  currentId=id;
-  const p=getCurrent();
-  if(!p)return;
-  document.getElementById("homeView").classList.add("hidden");
-  document.getElementById("detailView").classList.remove("hidden");
-  document.getElementById("detailName").textContent=p.name;
-  document.getElementById("detailDate").textContent="Dibuat: "+p.date;
-  document.getElementById("editName").value=p.name;
-  document.getElementById("editGenre").value=p.genre;
-  document.getElementById("editDescription").value=p.description;
-  loadStory();loadProduction();renderCharacters();renderEpisodes();
-  showTab("info");
-  window.scrollTo(0,0);
-}
-function goHome(){
-  document.getElementById("detailView").classList.add("hidden");
-  document.getElementById("homeView").classList.remove("hidden");
-  currentId=null;renderProjects();window.scrollTo(0,0);
-}
-function showTab(tab){
-  ["info","story","characters","episodes","production"].forEach(t=>{
-    document.getElementById("content-"+t).classList.toggle("hidden",t!==tab);
-    document.getElementById("tab-"+t).classList.toggle("active",t===tab);
+
+function openTab(tab) {
+  const tabs = ["info", "story", "characters", "episodes", "production"];
+
+  tabs.forEach(name => {
+    document.getElementById("tab-" + name).classList.toggle("hidden", name !== tab);
+
+    const button = document.querySelector('[data-tab="' + name + '"]');
+    button.classList.toggle("active", name === tab);
   });
 }
-function saveInfo(){
-  const p=getCurrent();if(!p)return;
-  p.name=document.getElementById("editName").value.trim()||p.name;
-  p.genre=document.getElementById("editGenre").value.trim();
-  p.description=document.getElementById("editDescription").value.trim();
-  saveProjects();
-  document.getElementById("detailName").textContent=p.name;
+
+function saveInfo() {
+  const p = getCurrent();
+  if (!p) return;
+
+  const title = document.getElementById("editTitle").value.trim();
+
+  if (!title) {
+    alert("Judul proyek tidak boleh kosong.");
+    return;
+  }
+
+  p.title = title;
+  p.genre = document.getElementById("editGenre").value.trim();
+  p.description = document.getElementById("editDescription").value.trim();
+
+  saveAll();
+  document.getElementById("detailTitle").textContent = p.title;
   alert("Informasi proyek berhasil disimpan.");
 }
-function loadStory(){
-  const p=getCurrent();if(!p)return;
-  const s=p.story;
-  document.getElementById("storySynopsis").value=s.synopsis||"";
-  document.getElementById("storyWorld").value=s.world||"";
-  document.getElementById("storyRules").value=s.rules||"";
-  document.getElementById("storyEvents").value=s.events||"";
-  document.getElementById("storyNotes").value=s.notes||"";
+
+function fillStory() {
+  const p = getCurrent();
+  if (!p) return;
+
+  const s = p.story;
+
+  document.getElementById("storySynopsis").value = s.synopsis || "";
+  document.getElementById("storyWorld").value = s.world || "";
+  document.getElementById("storyRules").value = s.rules || "";
+  document.getElementById("storyEvents").value = s.events || "";
+  document.getElementById("storyContinuity").value = s.continuity || "";
 }
-function saveStory(){
-  const p=getCurrent();if(!p)return;
-  p.story={
-    synopsis:document.getElementById("storySynopsis").value,
-    world:document.getElementById("storyWorld").value,
-    rules:document.getElementById("storyRules").value,
-    events:document.getElementById("storyEvents").value,
-    notes:document.getElementById("storyNotes").value
+
+function saveStory() {
+  const p = getCurrent();
+  if (!p) return;
+
+  p.story = {
+    synopsis: document.getElementById("storySynopsis").value,
+    world: document.getElementById("storyWorld").value,
+    rules: document.getElementById("storyRules").value,
+    events: document.getElementById("storyEvents").value,
+    continuity: document.getElementById("storyContinuity").value
   };
-  saveProjects();alert("Story Memory berhasil disimpan.");
+
+  saveAll();
+  alert("Story Memory berhasil disimpan.");
 }
-function addCharacter(){
-  const p=getCurrent();if(!p)return;
-  const name=document.getElementById("charName").value.trim();
-  if(!name){alert("Masukkan nama karakter.");return}
+
+function addCharacter() {
+  const p = getCurrent();
+  if (!p) return;
+
+  const name = document.getElementById("charName").value.trim();
+
+  if (!name) {
+    alert("Masukkan nama karakter.");
+    return;
+  }
+
   p.characters.push({
-    id:Date.now(),name,
-    appearance:document.getElementById("charAppearance").value,
-    personality:document.getElementById("charPersonality").value,
-    voice:document.getElementById("charVoice").value,
-    relations:document.getElementById("charRelations").value
+    id: String(Date.now()),
+    name,
+    age: document.getElementById("charAge").value.trim(),
+    appearance: document.getElementById("charAppearance").value.trim(),
+    personality: document.getElementById("charPersonality").value.trim(),
+    background: document.getElementById("charBackground").value.trim()
   });
-  ["charName","charAppearance","charPersonality","charVoice","charRelations"].forEach(id=>document.getElementById(id).value="");
-  saveProjects();renderCharacters();alert("Karakter berhasil disimpan.");
+
+  saveAll();
+
+  ["charName", "charAge", "charAppearance", "charPersonality", "charBackground"]
+    .forEach(id => document.getElementById(id).value = "");
+
+  renderCharacters();
+  alert("Karakter berhasil ditambahkan.");
 }
-function renderCharacters(){
-  const p=getCurrent();if(!p)return;
-  const box=document.getElementById("characterList");
-  if(!p.characters.length){box.innerHTML='<div class="empty">Belum ada karakter.</div>';return}
-  box.innerHTML=p.characters.map(c=>`
+
+function renderCharacters() {
+  const p = getCurrent();
+  const list = document.getElementById("characterList");
+
+  if (!p || p.characters.length === 0) {
+    list.innerHTML = '<div class="empty">Belum ada karakter.</div>';
+    return;
+  }
+
+  list.innerHTML = p.characters.map(c => `
     <div class="item">
-      <strong>👤 ${escapeHTML(c.name)}</strong>
-      <p><b>Penampilan:</b> ${escapeHTML(c.appearance||"Belum diisi")}</p>
-      <p><b>Kepribadian:</b> ${escapeHTML(c.personality||"Belum diisi")}</p>
-      <p><b>Suara:</b> ${escapeHTML(c.voice||"Belum diisi")}</p>
-      <p><b>Hubungan/perkembangan:</b> ${escapeHTML(c.relations||"Belum diisi")}</p>
-      <button class="danger" onclick="deleteCharacter(${c.id})">Hapus Karakter</button>
-    </div>`).join("");
+      <h3>${escapeHTML(c.name)}</h3>
+      <p><strong>Usia:</strong> ${escapeHTML(c.age || "-")}</p>
+      <p><strong>Penampilan:</strong><br>${escapeHTML(c.appearance || "-")}</p>
+      <p><strong>Kepribadian:</strong><br>${escapeHTML(c.personality || "-")}</p>
+      <p><strong>Latar belakang:</strong><br>${escapeHTML(c.background || "-")}</p>
+      <button class="danger" onclick="deleteCharacter('${c.id}')">Hapus Karakter</button>
+    </div>
+  `).join("");
 }
-function deleteCharacter(id){
-  const p=getCurrent();if(!p||!confirm("Hapus karakter ini?"))return;
-  p.characters=p.characters.filter(c=>c.id!==id);
-  saveProjects();renderCharacters();
+
+function deleteCharacter(id) {
+  const p = getCurrent();
+  if (!p || !confirm("Hapus karakter ini?")) return;
+
+  p.characters = p.characters.filter(c => c.id !== id);
+  saveAll();
+  renderCharacters();
 }
-function addEpisode(){
-  const p=getCurrent();if(!p)return;
-  const name=document.getElementById("episodeName").value.trim();
-  if(!name){alert("Masukkan judul episode.");return}
+
+function addEpisode() {
+  const p = getCurrent();
+  if (!p) return;
+
+  const title = document.getElementById("episodeTitle").value.trim();
+
+  if (!title) {
+    alert("Masukkan judul episode.");
+    return;
+  }
+
   p.episodes.push({
-    id:Date.now(),name,
-    summary:document.getElementById("episodeSummary").value,
-    characters:document.getElementById("episodeCharacters").value,
-    notes:document.getElementById("episodeNotes").value
+    id: String(Date.now()),
+    title,
+    summary: document.getElementById("episodeSummary").value.trim(),
+    ending: document.getElementById("episodeEnding").value.trim()
   });
-  ["episodeName","episodeSummary","episodeCharacters","episodeNotes"].forEach(id=>document.getElementById(id).value="");
-  saveProjects();renderEpisodes();alert("Episode berhasil disimpan.");
+
+  saveAll();
+
+  ["episodeTitle", "episodeSummary", "episodeEnding"]
+    .forEach(id => document.getElementById(id).value = "");
+
+  renderEpisodes();
+  alert("Episode berhasil ditambahkan.");
 }
-function renderEpisodes(){
-  const p=getCurrent();if(!p)return;
-  const box=document.getElementById("episodeList");
-  if(!p.episodes.length){box.innerHTML='<div class="empty">Belum ada episode.</div>';return}
-  box.innerHTML=p.episodes.map((e,i)=>`
+
+function renderEpisodes() {
+  const p = getCurrent();
+  const list = document.getElementById("episodeList");
+
+  if (!p || p.episodes.length === 0) {
+    list.innerHTML = '<div class="empty">Belum ada episode.</div>';
+    return;
+  }
+
+  list.innerHTML = p.episodes.map((e, index) => `
     <div class="item">
-      <strong>🎞️ ${i+1}. ${escapeHTML(e.name)}</strong>
-      <p><b>Ringkasan:</b> ${escapeHTML(e.summary||"Belum diisi")}</p>
-      <p><b>Karakter:</b> ${escapeHTML(e.characters||"Belum ditentukan")}</p>
-      <p><b>Catatan:</b> ${escapeHTML(e.notes||"Belum diisi")}</p>
-      <button class="danger" onclick="deleteEpisode(${e.id})">Hapus Episode</button>
-    </div>`).join("");
+      <h3>${index + 1}. ${escapeHTML(e.title)}</h3>
+      <p><strong>Ringkasan:</strong><br>${escapeHTML(e.summary || "-")}</p>
+      <p><strong>Catatan akhir:</strong><br>${escapeHTML(e.ending || "-")}</p>
+      <button class="danger" onclick="deleteEpisode('${e.id}')">Hapus Episode</button>
+    </div>
+  `).join("");
 }
-function deleteEpisode(id){
-  const p=getCurrent();if(!p||!confirm("Hapus episode ini?"))return;
-  p.episodes=p.episodes.filter(e=>e.id!==id);
-  saveProjects();renderEpisodes();
+
+function deleteEpisode(id) {
+  const p = getCurrent();
+  if (!p || !confirm("Hapus episode ini?")) return;
+
+  p.episodes = p.episodes.filter(e => e.id !== id);
+  saveAll();
+  renderEpisodes();
 }
-function loadProduction(){
-  const p=getCurrent();if(!p)return;
-  document.getElementById("productionStatus").value=p.production.status||"Dalam pengembangan";
-  document.getElementById("productionNotes").value=p.production.notes||"";
+
+function fillProduction() {
+  const p = getCurrent();
+  if (!p) return;
+
+  const d = p.production;
+
+  document.getElementById("prodVisual").value = d.visual || "";
+  document.getElementById("prodLanguage").value = d.language || "";
+  document.getElementById("prodResolution").value = d.resolution || "1080p";
+  document.getElementById("prodNotes").value = d.notes || "";
 }
-function saveProduction(){
-  const p=getCurrent();if(!p)return;
-  p.production={
-    status:document.getElementById("productionStatus").value,
-    notes:document.getElementById("productionNotes").value
+
+function saveProduction() {
+  const p = getCurrent();
+  if (!p) return;
+
+  p.production = {
+    visual: document.getElementById("prodVisual").value,
+    language: document.getElementById("prodLanguage").value,
+    resolution: document.getElementById("prodResolution").value,
+    notes: document.getElementById("prodNotes").value
   };
-  saveProjects();alert("Catatan produksi berhasil disimpan.");
+
+  saveAll();
+  alert("Rencana produksi berhasil disimpan.");
 }
+
+function deleteCurrentProject() {
+  const p = getCurrent();
+  if (!p || !confirm("Yakin ingin menghapus seluruh proyek ini?")) return;
+
+  projects = projects.filter(item => item.id !== currentId);
+  currentId = null;
+  saveAll();
+  showPage("projectsPage");
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[char]);
+}
+
+loadProjects();
 renderProjects();
+showPage("homePage");
 </script>
+
 </body>
 </html>
