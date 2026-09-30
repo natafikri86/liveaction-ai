@@ -149,14 +149,14 @@
       ].join(";");
 
       openButton.addEventListener("click", function () {
-  if (window.LiveActionStudioWorkspace) {
-    window.LiveActionStudioWorkspace.open(project.id);
-  } else {
-    status.textContent =
-      "Ruang kerja belum berhasil dimuat. Muat ulang halaman.";
-  }
-});
+  status.textContent =
+    "Proyek dipilih: " + project.name +
+    ". Ruang kerja sedang diperbaiki.";
 
+  panel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
       card.append(title, description, stats, date, openButton);
       return card;
     }
