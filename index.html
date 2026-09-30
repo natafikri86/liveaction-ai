@@ -1343,40 +1343,65 @@ function checkRecoveryData() {
   const result = document.getElementById("recoveryResult");
 
   try {
-    const raw = localStorage.getItem(
-      "liveaction_ai_projects_v2"
-    );
+    let report = "PEMERIKSAAN SELURUH PENYIMPANAN\n\n";
+    let found = 0;
 
-    if (!raw) {
-      result.textContent =
-        "Tidak ditemukan data pada penyimpanan utama.";
-      return;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const raw = localStorage.getItem(key);
+
+      report += "Nama penyimpanan: " + key + "\n";
+      report += "Ukuran data: " + raw.length + " karakter\n";
+
+      try {
+        const data = JSON.parse(raw);
+
+        if (Array.isArray(data)) {
+          report += "Jenis: Daftar\n";
+          report += "Jumlah isi: " + data.length + "\n";
+
+          data.forEach((p) => {
+            if (p && typeof p === "object") {
+              report += "Nama proyek: " +
+                (p.name || p.title || "Tanpa nama") + "\n";
+            }
+          });
+
+          if (
+            data.some(p =>
+              p && (
+                p.name === "THE LAST HORIZON" ||
+                p.title === "THE LAST HORIZON"
+              )
+            )
+          ) {
+            report += "🎉 THE LAST HORIZON DITEMUKAN!\n";
+          }
+        } else if (data && typeof data === "object") {
+          report += "Jenis: Data objek\n";
+          report += "Kunci: " + Object.keys(data).join(", ") + "\n";
+        } else {
+          report += "Jenis: Data lainnya\n";
+        }
+      } catch (e) {
+        report += "Jenis: Teks biasa\n";
+      }
+
+      report += "\n--------------------\n\n";
+      found++;
     }
 
-    const data = JSON.parse(raw);
-
-    if (!Array.isArray(data)) {
-      result.textContent =
-        "Data ditemukan, tetapi formatnya bukan daftar proyek.";
-      return;
+    if (found === 0) {
+      report = "Penyimpanan browser ini kosong.";
     }
 
-    result.textContent =
-      "Jumlah proyek ditemukan: " + data.length + "\n\n" +
-      data.map((p, i) =>
-        (i + 1) + ". " + (p.name || "Tanpa nama") +
-        "\n   ID: " + (p.id || "Tidak tersedia") +
-        "\n   Karakter: " + (p.characters?.length || 0) +
-        "\n   Lokasi: " + (p.locations?.length || 0) +
-        "\n   Episode: " + (p.episodes?.length || 0)
-      ).join("\n\n");
+    result.textContent = report;
 
   } catch (error) {
     result.textContent =
-      "Terjadi kesalahan saat membaca data: " + error.message;
+      "Terjadi kesalahan: " + error.message;
   }
 }
-
 function downloadRecoveryData() {
   try {
     const raw = localStorage.getItem(
