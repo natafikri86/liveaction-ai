@@ -1,1442 +1,763 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LiveAction AI — Film Creation Studio</title>
+<meta name="theme-color" content="#0b1020">
+<title>LiveAction AI — Video Studio</title>
 
 <style>
 :root {
-  --bg: #0b1120;
-  --panel: #172338;
-  --panel2: #202f49;
-  --blue: #3478f6;
-  --purple: #3932a0;
-  --text: #f3f6ff;
-  --muted: #aab7cc;
-  --green: #48c99a;
-  --border: #34445f;
-  --red: #ef6464;
+  --bg: #0b1020;
+  --panel: #151e32;
+  --panel2: #1c2942;
+  --text: #f5f7ff;
+  --muted: #9aa9c2;
+  --accent: #6c8cff;
+  --accent2: #9b7bff;
+  --green: #42d6a4;
+  --border: rgba(255,255,255,.09);
+  --radius: 20px;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: Arial, sans-serif;
+  font-family: system-ui, Arial, sans-serif;
+  padding-bottom: 90px;
 }
 
-button, input, textarea, select { font: inherit; }
-button { cursor: pointer; }
+button, input, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  max-width: 760px;
+  margin: auto;
+  padding: 18px;
+}
 
 header {
-  padding: 22px 18px;
-  background: #172338;
-  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 14px;
-  max-width: 1100px;
-  margin: auto;
+  gap: 12px;
 }
 
 .logo {
-  background: var(--blue);
-  border-radius: 17px;
-  width: 65px;
-  height: 65px;
+  width: 46px;
+  height: 46px;
   display: grid;
   place-items: center;
-  font-size: 34px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #6c8cff, #9b7bff);
+  font-size: 24px;
 }
 
-.brand h1 { margin: 0; font-size: 25px; }
+.brand h1 {
+  font-size: 19px;
+  margin: 0;
+}
 
 .brand p {
+  font-size: 12px;
   color: var(--muted);
-  margin: 5px 0 0;
+  margin: 3px 0 0;
 }
 
-.creator {
-  color: var(--green);
-  font-size: 14px;
-  margin-top: 6px;
-}
-
-main {
-  max-width: 1100px;
-  margin: auto;
-  padding: 22px 16px 110px;
-}
-
-h2 { font-size: 24px; }
-
-.muted {
-  color: var(--muted);
-  line-height: 1.6;
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--panel2);
+  display: grid;
+  place-items: center;
 }
 
 .hero {
-  background: linear-gradient(130deg, #263fa0, #39308f);
-  padding: 28px;
-  border-radius: 22px;
+  padding: 25px 22px;
+  border-radius: 25px;
+  background:
+    radial-gradient(circle at 90% 10%, #51418a 0, transparent 42%),
+    linear-gradient(135deg, #1a2c52, #151b32);
   margin-bottom: 24px;
+}
+
+.eyebrow {
+  color: #aebfff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
 }
 
 .hero h2 {
   font-size: 30px;
+  line-height: 1.2;
   margin: 12px 0;
 }
 
 .hero p {
-  color: #dce4ff;
-  line-height: 1.6;
+  color: #c1cbe0;
+  font-size: 14px;
+  line-height: 1.7;
 }
 
-.panel {
+.section-title {
+  font-size: 18px;
+  margin: 25px 0 14px;
+}
+
+.card {
   background: var(--panel);
   border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.upload {
+  display: block;
+  border: 2px dashed #52658b;
   border-radius: 18px;
-  padding: 22px;
-  margin-bottom: 20px;
+  padding: 28px 15px;
+  text-align: center;
+  background: #111a2d;
 }
 
-button.primary {
-  background: var(--blue);
-  color: white;
-  border: 0;
-  border-radius: 12px;
-  padding: 13px 18px;
-  font-weight: bold;
+.upload .symbol {
+  font-size: 42px;
+  margin-bottom: 8px;
 }
 
-button.secondary {
-  background: var(--panel2);
-  color: white;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 16px;
+.upload strong {
+  display: block;
+  font-size: 16px;
 }
 
-button.danger {
-  background: #572b38;
-  color: #ffd8df;
-  border: 1px solid #8b4253;
-  border-radius: 10px;
-  padding: 10px 14px;
+.upload small {
+  display: block;
+  color: var(--muted);
+  margin-top: 8px;
 }
 
-button:active { transform: scale(.98); }
+.upload input {
+  display: none;
+}
 
-input, textarea, select {
+#videoPreview {
   width: 100%;
-  background: #0d1628;
-  color: white;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
-  margin: 8px 0 18px;
-  outline: none;
+  max-height: 320px;
+  margin-top: 15px;
+  border-radius: 14px;
+  background: #000;
+  display: none;
 }
 
-input:focus, textarea:focus, select:focus {
-  border-color: var(--blue);
+.mode-grid, .style-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+
+.choice {
+  background: var(--panel2);
+  border: 2px solid transparent;
+  border-radius: 16px;
+  padding: 15px 12px;
+  text-align: left;
+  color: var(--text);
+  min-height: 120px;
+}
+
+.choice.active {
+  border-color: var(--accent);
+  background: #26365a;
+}
+
+.choice .emoji {
+  font-size: 29px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.choice strong {
+  font-size: 14px;
+  display: block;
+}
+
+.choice small {
+  color: var(--muted);
+  display: block;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.style-choice {
+  min-height: 90px;
+}
+
+.field-label {
+  display: block;
+  font-weight: 600;
+  margin: 18px 0 9px;
+  font-size: 14px;
 }
 
 textarea {
-  min-height: 120px;
+  width: 100%;
+  min-height: 105px;
   resize: vertical;
-}
-
-label {
-  display: block;
-  color: var(--muted);
-  margin-top: 10px;
-}
-
-.project-card {
-  background: linear-gradient(130deg, #263fa0, #39308f);
-  border-radius: 18px;
-  padding: 22px;
-  margin: 14px 0;
-  cursor: pointer;
-}
-
-.project-card h3 {
-  font-size: 22px;
-  margin: 8px 0;
-}
-
-.project-card small { color: #d4ddff; }
-
-.status {
-  color: var(--green);
-  margin-top: 16px;
-}
-
-.tabs {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 8px 0 18px;
-  scrollbar-width: thin;
-}
-
-.tab {
-  flex: 0 0 auto;
-  background: var(--panel2);
-  color: white;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  padding: 14px 18px;
-  font-weight: bold;
-}
-
-.tab.active {
-  background: var(--blue);
-  border-color: var(--blue);
-}
-
-.item {
-  background: #101a2c;
+  padding: 14px;
   border: 1px solid var(--border);
   border-radius: 14px;
+  background: #10182a;
+  color: white;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: var(--accent);
+}
+
+.primary {
+  width: 100%;
+  border: 0;
+  border-radius: 15px;
   padding: 16px;
-  margin: 12px 0;
+  background: linear-gradient(100deg, #6688ff, #8d72f5);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 18px;
 }
 
-.item h3 { margin-top: 0; }
-
-.row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
+.secondary {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel2);
+  color: white;
+  padding: 10px 14px;
 }
 
-.row > * { flex: 1; }
+.note {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 12px;
+}
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
+
+.project-item {
+  background: var(--panel2);
+  padding: 14px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+
+.project-item strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.project-item small {
+  color: var(--muted);
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 20px 5px;
+}
 
 .bottom-nav {
   position: fixed;
+  z-index: 10;
   bottom: 0;
   left: 0;
   right: 0;
-  background: #172338;
+  background: #10182b;
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: space-around;
-  padding: 12px 4px;
-  z-index: 10;
+  padding: 10px 4px calc(10px + env(safe-area-inset-bottom));
 }
 
-.bottom-nav button {
+.nav-btn {
   background: none;
   border: 0;
   color: var(--muted);
-  font-size: 12px;
-  min-width: 60px;
+  font-size: 11px;
+  min-width: 65px;
 }
 
-.bottom-nav span {
+.nav-btn span {
   display: block;
-  font-size: 23px;
+  font-size: 21px;
   margin-bottom: 4px;
+}
+
+.nav-btn.active {
+  color: #8ca7ff;
 }
 
 footer {
   text-align: center;
   color: var(--muted);
-  padding: 22px 12px 110px;
-  font-size: 13px;
+  font-size: 12px;
+  padding: 25px 10px;
 }
 
-.notice {
-  background: #173b36;
-  border: 1px solid #286d5b;
-  color: #b9f5df;
-  padding: 14px;
-  border-radius: 12px;
-  margin: 14px 0;
-  line-height: 1.5;
-}
+@media (min-width: 600px) {
+  .app {
+    padding: 28px;
+  }
 
-.location-tag {
-  display: inline-block;
-  background: #263f70;
-  border-radius: 8px;
-  padding: 5px 9px;
-  margin: 4px 4px 4px 0;
-  font-size: 13px;
-}
-
-.file-input { margin-top: 10px; }
-
-.empty {
-  text-align: center;
-  color: var(--muted);
-  padding: 30px 10px;
-}
-
-@media (min-width: 700px) {
-  main { padding-top: 35px; }
-  .hero h2 { font-size: 38px; }
+  .hero h2 {
+    font-size: 38px;
+  }
 }
 </style>
 </head>
 
 <body>
 
+<div class="app">
+
 <header>
   <div class="brand">
     <div class="logo">🎬</div>
     <div>
       <h1>LiveAction AI</h1>
-      <p>Film Creation Studio</p>
-      <div class="creator">Created by Ibrohim Alvaro</div>
+      <p>Video Transformation Studio</p>
     </div>
   </div>
+  <div class="avatar">✨</div>
 </header>
 
 <main>
 
-<!-- HOME -->
 <section id="homePage">
+
   <div class="hero">
-    <div>SELAMAT DATANG DI STUDIO</div>
-    <h2>Wujudkan Cerita Menjadi Film</h2>
+    <div class="eyebrow">AI VIDEO STUDIO</div>
+    <h2>Ubah dunia visualmu.</h2>
     <p>
-      Ruang kerja untuk merancang cerita, membangun karakter,
-      menyusun episode, dan mempersiapkan produksi film.
+      Transformasikan animasi menjadi film realistis,
+      atau ubah film asli menjadi animasi 3D.
+      Semua dimulai dari satu video.
     </p>
-    <button class="primary" onclick="showPage('projectsPage')">
-      🎬 Mulai Membuat Film
+  </div>
+
+  <h3 class="section-title">1. Unggah video</h3>
+
+  <div class="card">
+    <label class="upload" for="videoInput">
+      <div class="symbol">📤</div>
+      <strong>Pilih video dari perangkat</strong>
+      <small>Ketuk untuk membuka galeri HP</small>
+      <small>Prototype: video dipratinjau secara lokal</small>
+    </label>
+
+    <input
+      type="file"
+      id="videoInput"
+      accept="video/*"
+    >
+
+    <video
+      id="videoPreview"
+      controls
+      playsinline
+    ></video>
+
+    <p id="fileName" class="note">
+      Belum ada video dipilih.
+    </p>
+  </div>
+
+  <h3 class="section-title">2. Pilih transformasi</h3>
+
+  <div class="mode-grid">
+
+    <button class="choice active" data-mode="live">
+      <span class="emoji">🎥</span>
+      <strong>Animation → Live Action</strong>
+      <small>Animasi menjadi tampilan film nyata.</small>
     </button>
+
+    <button class="choice" data-mode="3d">
+      <span class="emoji">🧊</span>
+      <strong>Film → 3D Animation</strong>
+      <small>Film asli menjadi animasi 3D.</small>
+    </button>
+
   </div>
 
-  <div class="panel">
-    <h2>Studio Kreatif</h2>
-    <p class="muted">
-      Bangun dunia cerita, simpan detail tokoh, dan susun perjalanan
-      film dalam satu tempat.
-    </p>
-    <div class="notice">
-      Data proyek saat ini disimpan di browser perangkat ini.
-      Jangan hapus data browser jika ingin mempertahankan proyek.
-    </div>
+  <h3 class="section-title">3. Pilih gaya visual</h3>
+
+  <div class="style-grid" id="styleGrid">
+
+    <button class="choice style-choice active" data-style="Cinematic Realism">
+      <span class="emoji">🎞️</span>
+      <strong>Cinematic Realism</strong>
+      <small>Nuansa film layar lebar.</small>
+    </button>
+
+    <button class="choice style-choice" data-style="Fantasy Film">
+      <span class="emoji">🐉</span>
+      <strong>Fantasy Film</strong>
+      <small>Dunia fantasi sinematik.</small>
+    </button>
+
+    <button class="choice style-choice" data-style="Photorealistic">
+      <span class="emoji">📷</span>
+      <strong>Photorealistic</strong>
+      <small>Tampilan menyerupai rekaman nyata.</small>
+    </button>
+
+    <button class="choice style-choice" data-style="Stylized 3D">
+      <span class="emoji">🧸</span>
+      <strong>Stylized 3D</strong>
+      <small>Karakter animasi 3D bergaya.</small>
+    </button>
+
   </div>
 
-  <div class="panel">
-    <h2>💾 Backup Data Proyek</h2>
-    <p class="muted">
-      Simpan semua proyek ke file JSON agar dapat dipindahkan
-      atau dipulihkan jika data browser terhapus.
-    </p>
-    <div class="row">
-      <button class="primary" onclick="exportBackup()">⬇️ Unduh Backup</button>
-      <button class="secondary" onclick="document.getElementById('backupFile').click()">⬆️ Pulihkan Backup</button>
-    </div>
-    <input id="backupFile" class="file-input" type="file"
-      accept=".json,application/json"
-      onchange="importBackup(event)" style="display:none">
-    <p class="muted">
-      Simpan file backup di tempat aman. Pemulihan akan mengganti
-      daftar proyek saat ini.
+  <h3 class="section-title">4. Instruksi tambahan</h3>
+
+  <div class="card">
+    <label class="field-label" for="prompt">
+      Deskripsikan hasil yang diinginkan
+    </label>
+
+    <textarea
+      id="prompt"
+      placeholder="Contoh: Pertahankan gerakan karakter, ekspresi, dan suasana adegan. Gunakan pencahayaan sinematik..."
+    ></textarea>
+
+    <button class="primary" id="startBtn">
+      ✨ Siapkan Transformasi
+    </button>
+
+    <p class="note">
+      Ini prototype antarmuka. Pemrosesan AI video
+      belum terhubung. Tombol ini akan menampilkan
+      ringkasan pengaturan, bukan menghasilkan video.
     </p>
   </div>
 
-  <div class="panel">
-    <h2>Identitas Studio</h2>
-    <p><strong>LiveAction AI</strong></p>
-    <p class="muted">Created by Ibrohim Alvaro</p>
-    <p class="muted">Owned & Developed by Nata_F</p>
-  </div>
 </section>
 
-<!-- PROJECTS -->
 <section id="projectsPage" class="hidden">
-  <h2>📁 Proyek Film</h2>
-  <p class="muted">Buat dan kelola ide film atau serialmu.</p>
 
-  <div class="panel">
-    <h3>Buat Proyek Baru</h3>
-    <label>Judul film atau serial</label>
-    <input id="newTitle" placeholder="Contoh: Petualangan di Masa Depan">
-
-    <label>Genre</label>
-    <input id="newGenre" placeholder="Drama, aksi, fantasi...">
-
-    <label>Deskripsi singkat</label>
-    <textarea id="newDescription" placeholder="Ceritakan ide awal film..."></textarea>
-
-    <button class="primary" onclick="createProject()">＋ Buat Proyek</button>
+  <div class="hero">
+    <div class="eyebrow">MY WORKSPACE</div>
+    <h2>Riwayat proyek</h2>
+    <p>
+      Daftar pengaturan transformasi yang pernah
+      kamu simpan di browser ini.
+    </p>
   </div>
 
-  <h3>Daftar Proyek</h3>
-  <div id="projectList"></div>
+  <div class="card">
+    <div id="projectList" class="empty">
+      Belum ada proyek tersimpan.
+    </div>
+  </div>
+
 </section>
 
-<!-- DETAIL -->
-<section id="detailPage" class="hidden">
-  <button class="secondary" onclick="showPage('projectsPage')">
-    ← Kembali ke Proyek
-  </button>
+<section id="settingsPage" class="hidden">
 
-  <div class="hero" style="margin-top:20px">
-    <div>RUANG KERJA PROYEK</div>
-    <h2 id="detailTitle"></h2>
-    <p id="detailDate"></p>
-    <div class="status">● Tersimpan di perangkat</div>
+  <div class="hero">
+    <div class="eyebrow">APP INFORMATION</div>
+    <h2>Pengaturan</h2>
+    <p>Informasi prototype LiveAction AI.</p>
   </div>
 
-  <div class="tabs">
-    <button class="tab active" data-tab="info" onclick="openTab('info')">Informasi</button>
-    <button class="tab" data-tab="story" onclick="openTab('story')">Story Memory</button>
-    <button class="tab" data-tab="characters" onclick="openTab('characters')">Characters</button>
-    <button class="tab" data-tab="locations" onclick="openTab('locations')">Locations</button>
-    <button class="tab" data-tab="episodes" onclick="openTab('episodes')">Episodes</button>
-    <button class="tab" data-tab="production" onclick="openTab('production')">Production</button>
-  </div>
-
-  <div id="tab-info" class="panel">
-    <h2>Informasi Proyek</h2>
-    <label>Judul film atau serial</label>
-    <input id="editTitle">
-
-    <label>Genre</label>
-    <input id="editGenre" placeholder="Drama, aksi, fantasi...">
-
-    <label>Deskripsi</label>
-    <textarea id="editDescription"></textarea>
-
-    <button class="primary" onclick="saveInfo()">Simpan Informasi</button>
-  </div>
-
-  <div id="tab-story" class="panel hidden">
-    <h2>Story Memory</h2>
-    <p class="muted">
-      Simpan catatan utama agar dunia dan alur cerita tetap konsisten.
+  <div class="card">
+    <h3>Versi aplikasi</h3>
+    <p>LiveAction AI Prototype v1.0</p>
+    <p class="note">
+      Aplikasi ini berjalan di browser dan belum
+      menggunakan server pemrosesan video.
     </p>
-
-    <label>Sinopsis</label>
-    <textarea id="storySynopsis" placeholder="Tuliskan ringkasan cerita..."></textarea>
-
-    <label>Dunia dan latar cerita</label>
-    <textarea id="storyWorld" placeholder="Tempat, waktu, budaya, dan suasana cerita..."></textarea>
-
-    <label>Aturan dunia cerita</label>
-    <textarea id="storyRules" placeholder="Aturan khusus yang berlaku di dunia cerita..."></textarea>
-
-    <label>Urutan peristiwa penting</label>
-    <textarea id="storyEvents" placeholder="Catat kejadian penting secara berurutan..."></textarea>
-
-    <label>Catatan kesinambungan</label>
-    <textarea id="storyContinuity" placeholder="Hal yang harus diingat pada bagian berikutnya..."></textarea>
-
-    <button class="primary" onclick="saveStory()">Simpan Story Memory</button>
   </div>
 
-  <div id="tab-characters" class="panel hidden">
-    <h2>Characters</h2>
-    <p class="muted">
-      Catat identitas dan ciri tokoh agar deskripsinya mudah dijaga
-      tetap konsisten saat proses kreatif.
+  <div class="card">
+    <h3>Privasi video</h3>
+    <p class="note">
+      Video yang dipilih hanya digunakan untuk
+      pratinjau lokal pada halaman ini. Video tidak
+      diunggah ke server oleh prototype ini.
     </p>
-
-    <label>Nama karakter</label>
-    <input id="charName" placeholder="Nama tokoh">
-
-    <label>Usia</label>
-    <input id="charAge" placeholder="Usia tokoh">
-
-    <label>Penampilan fisik</label>
-    <textarea id="charAppearance" placeholder="Rambut, wajah, pakaian, tinggi badan..."></textarea>
-
-    <label>Kepribadian</label>
-    <textarea id="charPersonality" placeholder="Sifat dan kebiasaan tokoh..."></textarea>
-
-    <label>Latar belakang</label>
-    <textarea id="charBackground" placeholder="Asal-usul dan kisah hidup tokoh..."></textarea>
-
-    <label>Lokasi yang terkait (bisa pilih beberapa)</label>
-    <select id="charLocations" multiple size="5"></select>
-    <p class="muted">Tekan Ctrl atau gunakan pilihan beberapa item untuk memilih lebih dari satu lokasi.</p>
-
-    <button class="primary" onclick="addCharacter()">＋ Tambahkan Karakter</button>
-
-    <h3>Daftar Karakter</h3>
-    <div id="characterList"></div>
   </div>
 
-  <div id="tab-locations" class="panel hidden">
-    <h2>🗺️ Database Lokasi</h2>
-    <p class="muted">
-      Buat dan kelola tempat-tempat penting dalam dunia cerita.
-      Lokasi dapat dihubungkan dengan karakter.
-    </p>
-
-    <button class="secondary" onclick="addSampleLocations()">＋ Tambahkan 15 Lokasi THE LAST HORIZON</button>
-
-    <label>Nama lokasi</label>
-    <input id="locationName" placeholder="Nama tempat">
-
-    <label>Jenis lokasi</label>
-    <input id="locationType" placeholder="Kota, hutan, gua, markas...">
-
-    <label>Deskripsi lokasi</label>
-    <textarea id="locationDescription" placeholder="Suasana, bentuk, dan ciri khas lokasi..."></textarea>
-
-    <label>Peristiwa penting di lokasi</label>
-    <textarea id="locationEvents" placeholder="Kejadian yang berlangsung di tempat ini..."></textarea>
-
-    <button class="primary" onclick="addLocation()">＋ Simpan Lokasi</button>
-
-    <h3>Daftar Lokasi</h3>
-    <div id="locationList"></div>
-  </div>
-
-  <div id="tab-episodes" class="panel hidden">
-    <h2>Episodes</h2>
-    <p class="muted">Susun cerita menjadi bagian atau episode.</p>
-
-    <label>Judul episode</label>
-    <input id="episodeTitle" placeholder="Episode 1 — Awal Perjalanan">
-
-    <label>Ringkasan episode</label>
-    <textarea id="episodeSummary" placeholder="Apa yang terjadi dalam episode ini?"></textarea>
-
-    <label>Catatan akhir episode</label>
-    <textarea id="episodeEnding" placeholder="Peristiwa yang menghubungkan ke episode berikutnya..."></textarea>
-
-    <button class="primary" onclick="addEpisode()">＋ Tambahkan Episode</button>
-
-    <h3>Daftar Episode</h3>
-    <div id="episodeList"></div>
-  </div>
-
-  <div id="tab-production" class="panel hidden">
-    <h2>Production</h2>
-    <p class="muted">
-      Persiapkan kebutuhan produksi dan catatan teknis proyek.
-    </p>
-
-    <label>Gaya visual</label>
-    <textarea id="prodVisual" placeholder="Contoh: sinematik, realistis, pencahayaan hangat..."></textarea>
-
-    <label>Bahasa dialog</label>
-    <input id="prodLanguage" placeholder="Contoh: Indonesia">
-
-    <label>Target resolusi</label>
-    <select id="prodResolution">
-      <option>720p</option>
-      <option selected>1080p</option>
-      <option>4K</option>
-    </select>
-
-    <label>Catatan produksi</label>
-    <textarea id="prodNotes" placeholder="Musik, suara, lokasi, kebutuhan khusus..."></textarea>
-
-    <button class="primary" onclick="saveProduction()">Simpan Rencana Produksi</button>
-
-    <div class="notice">
-      Pengaturan di halaman ini merupakan catatan rencana.
-      Proses pembuatan video, audio, dubbing, dan rendering belum
-      terhubung ke mesin produksi AI.
-    </div>
-
-    <button class="danger" onclick="deleteCurrentProject()">Hapus Proyek Ini</button>
-  </div>
 </section>
 
 </main>
 
 <footer>
-  <strong>LiveAction AI — Film Creation Studio</strong><br>
-  Created by Ibrohim Alvaro<br>
-  Owned & Developed by Nata_F
+  <strong>LiveAction AI</strong><br>
+  AI Video Transformation Studio<br>
+  Prototype by Nata_F
 </footer>
 
+</div>
+
 <nav class="bottom-nav">
-  <button onclick="showPage('homePage')"><span>🏠</span>Home</button>
-  <button onclick="showPage('projectsPage')"><span>📁</span>Projects</button>
-  <button onclick="showPage('projectsPage')"><span>👥</span>Characters</button>
-  <button onclick="showPage('projectsPage')"><span>📖</span>Story</button>
+
+  <button class="nav-btn active" data-page="homePage">
+    <span>🏠</span>Studio
+  </button>
+
+  <button class="nav-btn" data-page="projectsPage">
+    <span>📁</span>Proyek
+  </button>
+
+  <button class="nav-btn" data-page="settingsPage">
+    <span>⚙️</span>Info
+  </button>
+
 </nav>
 
-  <script>
-const STORAGE_KEY = "liveaction_ai_projects_v2";
+<script>
+const STORAGE_KEY = "liveaction_ai_v3_video_projects";
+
+let selectedMode = "live";
+let selectedStyle = "Cinematic Realism";
+let selectedVideo = null;
+
+const videoInput = document.getElementById("videoInput");
+const videoPreview = document.getElementById("videoPreview");
+const fileName = document.getElementById("fileName");
 
 let projects = [];
-let currentId = null;
 
-function loadProjects() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    projects = saved ? JSON.parse(saved) : [];
-    if (!Array.isArray(projects)) projects = [];
-  } catch (error) {
-    projects = [];
-  }
+try {
+  projects = JSON.parse(
+    localStorage.getItem(STORAGE_KEY) || "[]"
+  );
 
-  projects = projects.map((p, index) => ({
-    id: p.id || String(Date.now() + index),
-    title: p.title || p.name || "Proyek Tanpa Judul",
-    genre: p.genre || "",
-    description: p.description || "",
-    date: p.date || new Date().toLocaleDateString("id-ID"),
-    story: p.story || {
-      synopsis: "",
-      world: "",
-      rules: "",
-      events: "",
-      continuity: ""
-    },
-    characters: Array.isArray(p.characters) ? p.characters : [],
-    locations: Array.isArray(p.locations) ? p.locations : [],
-    episodes: Array.isArray(p.episodes) ? p.episodes : [],
-    production: p.production || {
-      visual: "",
-      language: "",
-      resolution: "1080p",
-      notes: ""
-    }
-  }));
-
-  saveAll();
+  if (!Array.isArray(projects)) projects = [];
+} catch (e) {
+  projects = [];
 }
 
-function saveAll() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-  } catch (error) {
-    alert("Penyimpanan gagal. Periksa ruang penyimpanan browser.");
-  }
-}
+// Video preview
+videoInput.addEventListener("change", function() {
+  const file = this.files[0];
 
-function showPage(pageId) {
-  document.querySelectorAll("main > section").forEach(section => {
-    section.classList.add("hidden");
+  if (!file) return;
+
+  if (selectedVideo) {
+    URL.revokeObjectURL(selectedVideo);
+  }
+
+  selectedVideo = URL.createObjectURL(file);
+
+  videoPreview.src = selectedVideo;
+  videoPreview.style.display = "block";
+
+  fileName.textContent =
+    "Video dipilih: " + file.name;
+});
+
+// Mode selection
+document.querySelectorAll("[data-mode]").forEach(button => {
+  button.addEventListener("click", function() {
+    document.querySelectorAll("[data-mode]")
+      .forEach(item => item.classList.remove("active"));
+
+    this.classList.add("active");
+    selectedMode = this.dataset.mode;
+
+    updateStyles();
   });
+});
 
-  document.getElementById(pageId).classList.remove("hidden");
+// Style selection
+function updateStyles() {
+  const styles = selectedMode === "live"
+    ? [
+        ["Cinematic Realism", "🎞️", "Nuansa film layar lebar."],
+        ["Fantasy Film", "🐉", "Dunia fantasi sinematik."],
+        ["Photorealistic", "📷", "Tampilan menyerupai rekaman nyata."],
+        ["Historical Cinema", "🏰", "Gaya film sejarah."]
+      ]
+    : [
+        ["Stylized 3D", "🧸", "Karakter animasi 3D bergaya."],
+        ["3D Family Animation", "🌈", "Animasi 3D penuh warna."],
+        ["Realistic 3D", "🧊", "Model 3D dengan detail tinggi."],
+        ["Fantasy 3D", "✨", "Dunia fantasi tiga dimensi."]
+      ];
 
-  if (pageId === "projectsPage") renderProjects();
+  const grid = document.getElementById("styleGrid");
 
-  window.scrollTo(0, 0);
+  grid.innerHTML = styles.map((item, index) => `
+    <button class="choice style-choice ${index === 0 ? "active" : ""}"
+      data-style="${item[0]}">
+      <span class="emoji">${item[1]}</span>
+      <strong>${item[0]}</strong>
+      <small>${item[2]}</small>
+    </button>
+  `).join("");
+
+  selectedStyle = styles[0][0];
+
+  grid.querySelectorAll("[data-style]").forEach(button => {
+    button.addEventListener("click", function() {
+      grid.querySelectorAll("[data-style]")
+        .forEach(item => item.classList.remove("active"));
+
+      this.classList.add("active");
+      selectedStyle = this.dataset.style;
+    });
+  });
 }
 
-function createProject() {
-  const title = document.getElementById("newTitle").value.trim();
+// Navigation
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", function() {
+    const page = this.dataset.page;
 
-  if (!title) {
-    alert("Masukkan judul proyek terlebih dahulu.");
+    document.querySelectorAll("main section")
+      .forEach(section => section.classList.add("hidden"));
+
+    document.getElementById(page).classList.remove("hidden");
+
+    document.querySelectorAll(".nav-btn")
+      .forEach(item => item.classList.remove("active"));
+
+    this.classList.add("active");
+
+    if (page === "projectsPage") renderProjects();
+
+    window.scrollTo(0, 0);
+  });
+});
+
+// Save project settings
+document.getElementById("startBtn").addEventListener("click", function() {
+  if (!videoInput.files.length) {
+    alert("Silakan pilih video terlebih dahulu.");
     return;
   }
 
   const project = {
-    id: String(Date.now()) + Math.random().toString(16).slice(2),
-    title,
-    genre: document.getElementById("newGenre").value.trim(),
-    description: document.getElementById("newDescription").value.trim(),
-    date: new Date().toLocaleDateString("id-ID"),
-    story: {
-      synopsis: "",
-      world: "",
-      rules: "",
-      events: "",
-      continuity: ""
-    },
-    characters: [],
-    locations: [],
-    episodes: [],
-    production: {
-      visual: "",
-      language: "",
-      resolution: "1080p",
-      notes: ""
-    }
+    id: Date.now().toString(),
+    fileName: videoInput.files[0].name,
+    mode: selectedMode,
+    style: selectedStyle,
+    prompt: document.getElementById("prompt").value.trim(),
+    createdAt: new Date().toLocaleString("id-ID"),
+    status: "Menunggu integrasi mesin AI"
   };
 
   projects.unshift(project);
-  saveAll();
 
-  document.getElementById("newTitle").value = "";
-  document.getElementById("newGenre").value = "";
-  document.getElementById("newDescription").value = "";
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(projects)
+    );
+  } catch (error) {
+    alert("Pengaturan tidak dapat disimpan di browser.");
+    return;
+  }
+
+  alert(
+    "Pengaturan transformasi berhasil disimpan!\n\n" +
+    "Mode: " +
+    (selectedMode === "live"
+      ? "Animation to Live Action"
+      : "Live Action to 3D") +
+    "\nGaya: " + selectedStyle +
+    "\n\nPemrosesan AI akan diaktifkan setelah mesin video terhubung."
+  );
 
   renderProjects();
-  openProject(project.id);
-}
+});
 
+// Project history
 function renderProjects() {
   const list = document.getElementById("projectList");
 
-  if (projects.length === 0) {
-    list.innerHTML = '<div class="empty">Belum ada proyek. Buat proyek pertamamu!</div>';
+  if (!projects.length) {
+    list.innerHTML = '<div class="empty">Belum ada proyek tersimpan.</div>';
     return;
   }
 
-  list.innerHTML = projects.map(p => `
-    <div class="project-card" onclick="openProject('${p.id}')">
-      <small>RUANG KERJA PROYEK</small>
-      <h3>${escapeHTML(p.title)}</h3>
-      <p>${escapeHTML(p.genre || "Genre belum ditentukan")}</p>
-      <small>Dibuat: ${escapeHTML(p.date)}</small>
-      <div class="status">● Tersimpan di perangkat</div>
-    </div>
-  `).join("");
-}
-
-function openProject(id) {
-  currentId = id;
-  const p = getCurrent();
-
-  if (!p) return;
-
-  document.getElementById("detailTitle").textContent = p.title;
-  document.getElementById("detailDate").textContent = "Dibuat: " + p.date;
-
-  document.getElementById("editTitle").value = p.title;
-  document.getElementById("editGenre").value = p.genre;
-  document.getElementById("editDescription").value = p.description;
-
-  fillStory();
-  fillProduction();
-  renderCharacters();
-  renderLocations();
-  renderEpisodes();
-
-  showPage("detailPage");
-  openTab("info");
-}
-
-function getCurrent() {
-  return projects.find(p => p.id === currentId);
-}
-
-function openTab(tab) {
-  const tabs = [
-    "info",
-    "story",
-    "characters",
-    "locations",
-    "episodes",
-    "production"
-  ];
-
-  tabs.forEach(name => {
-    document.getElementById("tab-" + name)
-      .classList.toggle("hidden", name !== tab);
-
-    const button = document.querySelector('[data-tab="' + name + '"]');
-
-    if (button) {
-      button.classList.toggle("active", name === tab);
-    }
-  });
-}
-
-function saveInfo() {
-  const p = getCurrent();
-  if (!p) return;
-
-  const title = document.getElementById("editTitle").value.trim();
-
-  if (!title) {
-    alert("Judul proyek tidak boleh kosong.");
-    return;
-  }
-
-  p.title = title;
-  p.genre = document.getElementById("editGenre").value.trim();
-  p.description = document.getElementById("editDescription").value.trim();
-
-  saveAll();
-
-  document.getElementById("detailTitle").textContent = p.title;
-
-  alert("Informasi proyek berhasil disimpan.");
-}
-
-function fillStory() {
-  const p = getCurrent();
-  if (!p) return;
-
-  const s = p.story;
-
-  document.getElementById("storySynopsis").value = s.synopsis || "";
-  document.getElementById("storyWorld").value = s.world || "";
-  document.getElementById("storyRules").value = s.rules || "";
-  document.getElementById("storyEvents").value = s.events || "";
-  document.getElementById("storyContinuity").value = s.continuity || "";
-}
-
-function saveStory() {
-  const p = getCurrent();
-  if (!p) return;
-
-  p.story = {
-    synopsis: document.getElementById("storySynopsis").value,
-    world: document.getElementById("storyWorld").value,
-    rules: document.getElementById("storyRules").value,
-    events: document.getElementById("storyEvents").value,
-    continuity: document.getElementById("storyContinuity").value
-  };
-
-  saveAll();
-  alert("Story Memory berhasil disimpan.");
-}
-
-/* =========================
-   CHARACTERS
-========================= */
-
-function addCharacter() {
-  const p = getCurrent();
-  if (!p) return;
-
-  const name = document.getElementById("charName").value.trim();
-
-  if (!name) {
-    alert("Masukkan nama karakter.");
-    return;
-  }
-
-  const selectedLocations = Array.from(
-    document.getElementById("charLocations").selectedOptions
-  ).map(option => option.value);
-
-  p.characters.push({
-    id: String(Date.now()) + Math.random().toString(16).slice(2),
-    name,
-    age: document.getElementById("charAge").value.trim(),
-    appearance: document.getElementById("charAppearance").value.trim(),
-    personality: document.getElementById("charPersonality").value.trim(),
-    background: document.getElementById("charBackground").value.trim(),
-    locationIds: selectedLocations
-  });
-
-  saveAll();
-
-  [
-    "charName",
-    "charAge",
-    "charAppearance",
-    "charPersonality",
-    "charBackground"
-  ].forEach(id => {
-    document.getElementById(id).value = "";
-  });
-
-  Array.from(document.getElementById("charLocations").options)
-    .forEach(option => option.selected = false);
-
-  renderCharacters();
-  alert("Karakter berhasil ditambahkan.");
-}
-
-function renderCharacters() {
-  const p = getCurrent();
-  const list = document.getElementById("characterList");
-
-  if (!p || p.characters.length === 0) {
-    list.innerHTML = '<div class="empty">Belum ada karakter.</div>';
-    renderCharacterLocationOptions();
-    return;
-  }
-
-  list.innerHTML = p.characters.map(c => {
-    const locationNames = (c.locationIds || [])
-      .map(id => p.locations.find(loc => loc.id === id))
-      .filter(Boolean)
-      .map(loc => escapeHTML(loc.name));
-
-    return `
-      <div class="item">
-        <h3>${escapeHTML(c.name)}</h3>
-        <p><strong>Usia:</strong> ${escapeHTML(c.age || "-")}</p>
-        <p><strong>Penampilan:</strong><br>${escapeHTML(c.appearance || "-")}</p>
-        <p><strong>Kepribadian:</strong><br>${escapeHTML(c.personality || "-")}</p>
-        <p><strong>Latar belakang:</strong><br>${escapeHTML(c.background || "-")}</p>
-        <p><strong>Lokasi terkait:</strong><br>
-          ${locationNames.length
-            ? locationNames.map(name => `<span class="location-tag">${name}</span>`).join("")
-            : "Belum ada lokasi"}
-        </p>
-        <button class="danger" onclick="deleteCharacter('${c.id}')">
-          Hapus Karakter
-        </button>
-      </div>
-    `;
-  }).join("");
-
-  renderCharacterLocationOptions();
-}
-
-function renderCharacterLocationOptions() {
-  const p = getCurrent();
-  const select = document.getElementById("charLocations");
-
-  if (!p || !select) return;
-
-  const previous = Array.from(select.selectedOptions)
-    .map(option => option.value);
-
-  select.innerHTML = p.locations.map(loc => `
-    <option value="${escapeHTML(loc.id)}">
-      ${escapeHTML(loc.name)}
-    </option>
-  `).join("");
-
-  Array.from(select.options).forEach(option => {
-    option.selected = previous.includes(option.value);
-  });
-}
-
-function deleteCharacter(id) {
-  const p = getCurrent();
-
-  if (!p || !confirm("Hapus karakter ini?")) return;
-
-  p.characters = p.characters.filter(c => c.id !== id);
-
-  saveAll();
-  renderCharacters();
-}
-
-/* =========================
-   LOCATIONS
-========================= */
-
-function addLocation() {
-  const p = getCurrent();
-  if (!p) return;
-
-  const name = document.getElementById("locationName").value.trim();
-
-  if (!name) {
-    alert("Masukkan nama lokasi.");
-    return;
-  }
-
-  p.locations.push({
-    id: String(Date.now()) + Math.random().toString(16).slice(2),
-    name,
-    type: document.getElementById("locationType").value.trim(),
-    description: document.getElementById("locationDescription").value.trim(),
-    events: document.getElementById("locationEvents").value.trim()
-  });
-
-  saveAll();
-
-  [
-    "locationName",
-    "locationType",
-    "locationDescription",
-    "locationEvents"
-  ].forEach(id => {
-    document.getElementById(id).value = "";
-  });
-
-  renderLocations();
-  alert("Lokasi berhasil ditambahkan.");
-}
-
-function renderLocations() {
-  const p = getCurrent();
-  const list = document.getElementById("locationList");
-
-  if (!p || p.locations.length === 0) {
-    list.innerHTML = '<div class="empty">Belum ada lokasi.</div>';
-    renderCharacterLocationOptions();
-    return;
-  }
-
-  list.innerHTML = p.locations.map((loc, index) => {
-    const linkedCharacters = p.characters
-      .filter(c => (c.locationIds || []).includes(loc.id))
-      .map(c => escapeHTML(c.name));
-
-    return `
-      <div class="item">
-        <h3>${index + 1}. ${escapeHTML(loc.name)}</h3>
-        <p><strong>Jenis:</strong> ${escapeHTML(loc.type || "-")}</p>
-        <p><strong>Deskripsi:</strong><br>${escapeHTML(loc.description || "-")}</p>
-        <p><strong>Peristiwa:</strong><br>${escapeHTML(loc.events || "-")}</p>
-        <p><strong>Karakter terkait:</strong><br>
-          ${linkedCharacters.length
-            ? linkedCharacters.join(", ")
-            : "Belum ada karakter"}
-        </p>
-        <button class="danger" onclick="deleteLocation('${loc.id}')">
-          Hapus Lokasi
-        </button>
-      </div>
-    `;
-  }).join("");
-
-  renderCharacterLocationOptions();
-}
-
-function deleteLocation(id) {
-  const p = getCurrent();
-
-  if (!p || !confirm("Hapus lokasi ini?")) return;
-
-  p.locations = p.locations.filter(loc => loc.id !== id);
-
-  p.characters.forEach(c => {
-    c.locationIds = (c.locationIds || []).filter(locationId => locationId !== id);
-  });
-
-  saveAll();
-  renderLocations();
-  renderCharacters();
-}
-
-/* =========================
-   15 SAMPLE LOCATIONS
-========================= */
-
-function addSampleLocations() {
-  const p = getCurrent();
-  if (!p) return;
-
-  const samples = [
-    ["Kota Arunika", "Kota modern", "Kota besar tempat Arka memulai petualangannya.", "Awal penemuan petunjuk peta kuno."],
-    ["Gudang Tua", "Bangunan terbengkalai", "Gudang berdebu yang menyimpan peninggalan keluarga Mahendra.", "Arka menemukan peta peninggalan ayahnya."],
-    ["Hutan Kalimaya", "Hutan lebat", "Hutan tropis penuh jalur tersembunyi dan bahaya.", "Perjalanan pertama kelompok Arka."],
-    ["Kuil Seribu Bayangan", "Kuil kuno", "Kuil misterius dengan lorong dan teka-teki.", "Kelompok menemukan petunjuk menuju pegunungan."],
-    ["Pegunungan Arvand", "Pegunungan", "Pegunungan tinggi dengan cuaca ekstrem.", "Kelompok menghadapi badai dan ancaman Obsidian."],
-    ["Gurun Merah", "Gurun", "Hamparan pasir merah yang luas dan panas.", "Perjalanan melintasi gurun menuju gua kristal."],
-    ["Gua Kristal", "Gua bawah tanah", "Gua dengan kristal bercahaya dan formasi batu unik.", "Penemuan teknologi kuno."],
-    ["Markas Obsidian", "Markas rahasia", "Pusat operasi organisasi yang memburu peta.", "Konflik dengan Adrian Voss."],
-    ["Desa Pesisir Nawasena", "Desa pesisir", "Desa nelayan yang menjadi tempat persinggahan.", "Kelompok memperoleh bantuan warga."],
-    ["Air Terjun Tersembunyi", "Air terjun", "Air terjun terpencil yang menyembunyikan jalan masuk.", "Penemuan jalur rahasia."],
-    ["Jembatan Batu", "Jembatan kuno", "Jembatan batu tua di atas jurang dalam.", "Kelompok dikejar pasukan Obsidian."],
-    ["Lapangan Terbang Terlantar", "Lapangan terbang", "Landasan lama yang tidak lagi digunakan.", "Persiapan perjalanan menuju wilayah terpencil."],
-    ["Perpustakaan Bawah Tanah", "Perpustakaan kuno", "Ruang arsip yang menyimpan sejarah peradaban lama.", "Terungkapnya rahasia peta."],
-    ["Kota yang Hilang", "Kota kuno", "Kota tersembunyi dengan arsitektur dan teknologi kuno.", "Arka menemukan kebenaran tentang ayahnya."],
-    ["Ruang Inti Horizon", "Ruang teknologi", "Ruang pusat dengan teknologi yang dapat mengubah masa depan.", "Konfrontasi terakhir dan keputusan Arka."]
-  ];
-
-  let added = 0;
-
-  samples.forEach(sample => {
-    const exists = p.locations.some(
-      loc => loc.name.toLowerCase() === sample[0].toLowerCase()
-    );
-
-    if (!exists) {
-      p.locations.push({
-        id: String(Date.now()) + Math.random().toString(16).slice(2),
-        name: sample[0],
-        type: sample[1],
-        description: sample[2],
-        events: sample[3]
-      });
-
-      added++;
-    }
-  });
-
-  saveAll();
-  renderLocations();
-
-  alert(added
-    ? added + " lokasi contoh berhasil ditambahkan."
-    : "Semua lokasi contoh sudah ada di proyek ini.");
-}
-
-/* =========================
-   EPISODES
-========================= */
-
-function addEpisode() {
-  const p = getCurrent();
-  if (!p) return;
-
-  const title = document.getElementById("episodeTitle").value.trim();
-
-  if (!title) {
-    alert("Masukkan judul episode.");
-    return;
-  }
-
-  p.episodes.push({
-    id: String(Date.now()),
-    title,
-    summary: document.getElementById("episodeSummary").value.trim(),
-    ending: document.getElementById("episodeEnding").value.trim()
-  });
-
-  saveAll();
-
-  ["episodeTitle", "episodeSummary", "episodeEnding"]
-    .forEach(id => document.getElementById(id).value = "");
-
-  renderEpisodes();
-  alert("Episode berhasil ditambahkan.");
-}
-
-function renderEpisodes() {
-  const p = getCurrent();
-  const list = document.getElementById("episodeList");
-
-  if (!p || p.episodes.length === 0) {
-    list.innerHTML = '<div class="empty">Belum ada episode.</div>';
-    return;
-  }
-
-  list.innerHTML = p.episodes.map((e, index) => `
-    <div class="item">
-      <h3>${index + 1}. ${escapeHTML(e.title)}</h3>
-      <p><strong>Ringkasan:</strong><br>${escapeHTML(e.summary || "-")}</p>
-      <p><strong>Catatan akhir:</strong><br>${escapeHTML(e.ending || "-")}</p>
-      <button class="danger" onclick="deleteEpisode('${e.id}')">
-        Hapus Episode
+  list.innerHTML = projects.map(project => `
+    <div class="project-item">
+      <strong>${escapeHTML(project.fileName)}</strong>
+      <small>
+        ${project.mode === "live"
+          ? "Animation → Live Action"
+          : "Film → 3D Animation"}
+      </small>
+      <p>Gaya: ${escapeHTML(project.style)}</p>
+      <small>${escapeHTML(project.createdAt)}</small>
+      <p class="note">${escapeHTML(project.status)}</p>
+      <button class="secondary"
+        onclick="deleteProject('${project.id}')">
+        Hapus riwayat
       </button>
     </div>
   `).join("");
 }
 
-function deleteEpisode(id) {
-  const p = getCurrent();
+function deleteProject(id) {
+  if (!confirm("Hapus riwayat proyek ini?")) return;
 
-  if (!p || !confirm("Hapus episode ini?")) return;
+  projects = projects.filter(project => project.id !== id);
 
-  p.episodes = p.episodes.filter(e => e.id !== id);
-
-  saveAll();
-  renderEpisodes();
-}
-
-/* =========================
-   PRODUCTION
-========================= */
-
-function fillProduction() {
-  const p = getCurrent();
-  if (!p) return;
-
-  const d = p.production;
-
-  document.getElementById("prodVisual").value = d.visual || "";
-  document.getElementById("prodLanguage").value = d.language || "";
-  document.getElementById("prodResolution").value = d.resolution || "1080p";
-  document.getElementById("prodNotes").value = d.notes || "";
-}
-
-function saveProduction() {
-  const p = getCurrent();
-  if (!p) return;
-
-  p.production = {
-    visual: document.getElementById("prodVisual").value,
-    language: document.getElementById("prodLanguage").value,
-    resolution: document.getElementById("prodResolution").value,
-    notes: document.getElementById("prodNotes").value
-  };
-
-  saveAll();
-  alert("Rencana produksi berhasil disimpan.");
-}
-
-function deleteCurrentProject() {
-  const p = getCurrent();
-
-  if (!p || !confirm("Yakin ingin menghapus seluruh proyek ini?")) return;
-
-  projects = projects.filter(item => item.id !== currentId);
-  currentId = null;
-
-  saveAll();
-  showPage("projectsPage");
-}
-
-/* =========================
-   HTML SAFETY
-========================= */
-
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  })[char]);
-}
-
-    function exportBackup() {
-  const data = {
-    app: "LiveAction AI",
-    version: 2,
-    exportedAt: new Date().toISOString(),
-    projects
-  };
-
-  const blob = new Blob(
-    [JSON.stringify(data, null, 2)],
-    { type: "application/json" }
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(projects)
   );
 
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-
-  a.href = url;
-  a.download =
-    "liveaction-ai-backup-" +
-    new Date().toISOString().slice(0, 10) +
-    ".json";
-
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  URL.revokeObjectURL(url);
+  renderProjects();
 }
 
-function importBackup(event) {
-  const file = event.target.files[0];
-
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-    try {
-      const parsed = JSON.parse(e.target.result);
-
-      const incoming = Array.isArray(parsed)
-        ? parsed
-        : parsed.projects;
-
-      if (!Array.isArray(incoming)) {
-        throw new Error("Format file backup tidak valid.");
-      }
-
-      const confirmed = confirm(
-        "Restore backup akan mengganti daftar proyek yang tersimpan saat ini. " +
-        "Pastikan Anda sudah mengunduh backup terbaru sebelum melanjutkan. " +
-        "Lanjutkan?"
-      );
-
-      if (!confirmed) {
-        event.target.value = "";
-        return;
-      }
-
-      projects = incoming.map((p) => ({
-        ...p,
-        characters: Array.isArray(p.characters)
-          ? p.characters.map((c) => ({
-              ...c,
-              locationIds: Array.isArray(c.locationIds)
-                ? c.locationIds
-                : []
-            }))
-          : [],
-        locations: Array.isArray(p.locations)
-          ? p.locations
-          : [],
-        episodes: Array.isArray(p.episodes)
-          ? p.episodes
-          : [],
-        production: p.production || {}
-      }));
-
-      saveAll();
-      renderProjects();
-      showPage("homePage");
-
-      alert(
-        "Backup berhasil dipulihkan! " +
-        projects.length +
-        " proyek telah dimuat."
-      );
-
-    } catch (error) {
-      alert(
-        "Gagal memulihkan backup. " +
-        "Pastikan file JSON yang dipilih benar."
-      );
-
-      console.error(error);
-
-    } finally {
-      event.target.value = "";
-    }
-  };
-
-  reader.onerror = function () {
-    alert("File backup tidak dapat dibaca.");
-    event.target.value = "";
-  };
-
-  reader.readAsText(file);
+function escapeHTML(value) {
+  return String(value || "").replace(/[&<>"']/g, function(char) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
+  });
 }
 
-// Inisialisasi aplikasi
-loadProjects();
+// Initial setup
+updateStyles();
 renderProjects();
-showPage("homePage");
-
 </script>
 
-<!-- PEMERIKSAAN DAN PENYELAMATAN DATA PROYEK -->
-<div id="recoveryPanel" style="
-  position:fixed;
-  inset:0;
-  z-index:999999;
-  background:#101827;
-  color:#ffffff;
-  padding:20px;
-  overflow:auto;
-  font-family:Arial,sans-serif;
-">
-  <h2>🔍 Pemeriksaan Data LiveAction AI</h2>
-
-  <p>
-    Halaman ini hanya membaca data yang tersimpan
-    di browser. Tidak ada data yang dihapus.
-  </p>
-
-  <button
-    onclick="checkRecoveryData()"
-    style="padding:12px;margin:5px 0;width:100%;"
-  >
-    Periksa Data Proyek
-  </button>
-
-  <button
-    onclick="downloadRecoveryData()"
-    style="padding:12px;margin:5px 0;width:100%;"
-  >
-    Simpan Salinan Data
-  </button>
-
-  <pre id="recoveryResult" style="
-    white-space:pre-wrap;
-    overflow-wrap:anywhere;
-    background:#1e293b;
-    padding:12px;
-    border-radius:8px;
-  ">Tekan tombol Periksa Data Proyek.</pre>
-
-  <button
-    onclick="document.getElementById('recoveryPanel').remove()"
-    style="padding:12px;margin:5px 0;width:100%;"
-  >
-    Tutup Pemeriksaan
-  </button>
-</div>
-
-<script>
-function checkRecoveryData() {
-  const result = document.getElementById("recoveryResult");
-
-  try {
-    let report = "PEMERIKSAAN SELURUH PENYIMPANAN\n\n";
-    let found = 0;
-
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      const raw = localStorage.getItem(key);
-
-      report += "Nama penyimpanan: " + key + "\n";
-      report += "Ukuran data: " + raw.length + " karakter\n";
-
-      try {
-        const data = JSON.parse(raw);
-
-        if (Array.isArray(data)) {
-          report += "Jenis: Daftar\n";
-          report += "Jumlah isi: " + data.length + "\n";
-
-          data.forEach((p) => {
-            if (p && typeof p === "object") {
-              report += "Nama proyek: " +
-                (p.name || p.title || "Tanpa nama") + "\n";
-            }
-          });
-
-          if (
-            data.some(p =>
-              p && (
-                p.name === "THE LAST HORIZON" ||
-                p.title === "THE LAST HORIZON"
-              )
-            )
-          ) {
-            report += "🎉 THE LAST HORIZON DITEMUKAN!\n";
-          }
-        } else if (data && typeof data === "object") {
-          report += "Jenis: Data objek\n";
-          report += "Kunci: " + Object.keys(data).join(", ") + "\n";
-        } else {
-          report += "Jenis: Data lainnya\n";
-        }
-      } catch (e) {
-        report += "Jenis: Teks biasa\n";
-      }
-
-      report += "\n--------------------\n\n";
-      found++;
-    }
-
-    if (found === 0) {
-      report = "Penyimpanan browser ini kosong.";
-    }
-
-    result.textContent = report;
-
-  } catch (error) {
-    result.textContent =
-      "Terjadi kesalahan: " + error.message;
-  }
-}
-function downloadRecoveryData() {
-  try {
-    const raw = localStorage.getItem(
-      "liveaction_ai_projects_v2"
-    );
-
-    if (!raw) {
-      alert("Tidak ada data yang bisa disimpan.");
-      return;
-    }
-
-    const blob = new Blob(
-      [raw],
-      { type: "application/json" }
-    );
-
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = "liveaction-ai-recovery.json";
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    URL.revokeObjectURL(url);
-
-    alert("Salinan data berhasil disiapkan.");
-
-  } catch (error) {
-    alert("Gagal menyimpan data: " + error.message);
-  }
-}
-</script>
-  
 </body>
 </html>
+```
