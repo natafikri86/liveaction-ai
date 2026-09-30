@@ -7,9 +7,19 @@
     const page = document.getElementById("projectsPage");
 
     if (!data || !page) {
-      console.warn("Studio Projects: halaman atau data belum tersedia.");
-      return;
-    }
+  const warning = document.createElement("div");
+  warning.style.cssText =
+    "padding:15px;margin:15px;background:#7f1d1d;color:white;border-radius:10px;";
+
+  warning.textContent = !data
+    ? "Studio Proyek: file data belum berhasil dimuat."
+    : "Studio Proyek: halaman Proyek tidak ditemukan.";
+
+  document.body.appendChild(warning);
+
+  console.error("Studio Projects: halaman atau data belum tersedia.");
+  return;
+}
 
     if (document.getElementById("studioProjectsPanel")) return;
 
