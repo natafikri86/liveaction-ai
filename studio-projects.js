@@ -3,7 +3,6 @@
   "use strict";
 
   function startStudioProjects() {
-    alert("Studio Projects berhasil dijalankan");
     const data = window.LiveActionStudioData;
     const page = document.getElementById("projectsPage");
 
