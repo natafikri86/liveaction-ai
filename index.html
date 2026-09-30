@@ -599,6 +599,7 @@ document.querySelectorAll("[data-mode]").forEach(button => {
 });
 
 // Style selection
+
 function updateStyles() {
   const styles = selectedMode === "live"
     ? [
@@ -608,13 +609,12 @@ function updateStyles() {
         ["Historical Cinema", "🏰", "Gaya film sejarah."]
       ]
     : [
-        : [
-    ["Stylized 3D", "🧸", "Karakter animasi 3D bergaya."],
-    ["Chinese 3D Donghua", "🐉", "Animasi 3D bergaya donghua Tiongkok dengan tampilan sinematik."],
-    ["3D Family Animation", "🌈", "Animasi 3D penuh warna."],
-    ["Realistic 3D", "🧊", "Model 3D dengan detail tinggi."],
-    ["Fantasy 3D", "✨", "Dunia fantasi tiga dimensi."]
-  ];
+        ["Stylized 3D", "🧸", "Karakter animasi 3D bergaya."],
+        ["Chinese 3D Donghua", "🐉", "Animasi 3D bergaya donghua Tiongkok dengan tampilan sinematik."],
+        ["3D Family Animation", "🌈", "Animasi 3D penuh warna."],
+        ["Realistic 3D", "🧊", "Model 3D dengan detail tinggi."],
+        ["Fantasy 3D", "✨", "Dunia fantasi tiga dimensi."]
+      ];
 
   const grid = document.getElementById("styleGrid");
 
