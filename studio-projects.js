@@ -157,9 +157,11 @@
     behavior: "smooth",
     block: "start"
   });
-      card.append(title, description, stats, date, openButton);
-      return card;
-    }
+});
+
+card.append(title, description, stats, date, openButton);
+return card;
+}
 
     function renderProjects() {
       list.replaceChildren();
