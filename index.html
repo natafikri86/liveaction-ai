@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -20,9 +19,7 @@
   --red: #ef6464;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -31,13 +28,8 @@ body {
   font-family: Arial, sans-serif;
 }
 
-button, input, textarea, select {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
 
 header {
   padding: 22px 18px;
@@ -63,10 +55,7 @@ header {
   font-size: 34px;
 }
 
-.brand h1 {
-  margin: 0;
-  font-size: 25px;
-}
+.brand h1 { margin: 0; font-size: 25px; }
 
 .brand p {
   color: var(--muted);
@@ -85,9 +74,7 @@ main {
   padding: 22px 16px 110px;
 }
 
-h2 {
-  font-size: 24px;
-}
+h2 { font-size: 24px; }
 
 .muted {
   color: var(--muted);
@@ -144,9 +131,7 @@ button.danger {
   padding: 10px 14px;
 }
 
-button:active {
-  transform: scale(.98);
-}
+button:active { transform: scale(.98); }
 
 input, textarea, select {
   width: 100%;
@@ -187,9 +172,7 @@ label {
   margin: 8px 0;
 }
 
-.project-card small {
-  color: #d4ddff;
-}
+.project-card small { color: #d4ddff; }
 
 .status {
   color: var(--green);
@@ -227,9 +210,7 @@ label {
   margin: 12px 0;
 }
 
-.item h3 {
-  margin-top: 0;
-}
+.item h3 { margin-top: 0; }
 
 .row {
   display: flex;
@@ -238,13 +219,9 @@ label {
   align-items: center;
 }
 
-.row > * {
-  flex: 1;
-}
+.row > * { flex: 1; }
 
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 .bottom-nav {
   position: fixed;
@@ -290,6 +267,17 @@ footer {
   line-height: 1.5;
 }
 
+.location-tag {
+  display: inline-block;
+  background: #263f70;
+  border-radius: 8px;
+  padding: 5px 9px;
+  margin: 4px 4px 4px 0;
+  font-size: 13px;
+}
+
+.file-input { margin-top: 10px; }
+
 .empty {
   text-align: center;
   color: var(--muted);
@@ -297,12 +285,8 @@ footer {
 }
 
 @media (min-width: 700px) {
-  main {
-    padding-top: 35px;
-  }
-  .hero h2 {
-    font-size: 38px;
-  }
+  main { padding-top: 35px; }
+  .hero h2 { font-size: 38px; }
 }
 </style>
 </head>
@@ -346,6 +330,25 @@ footer {
       Data proyek saat ini disimpan di browser perangkat ini.
       Jangan hapus data browser jika ingin mempertahankan proyek.
     </div>
+  </div>
+
+  <div class="panel">
+    <h2>💾 Backup Data Proyek</h2>
+    <p class="muted">
+      Simpan semua proyek ke file JSON agar dapat dipindahkan
+      atau dipulihkan jika data browser terhapus.
+    </p>
+    <div class="row">
+      <button class="primary" onclick="exportBackup()">⬇️ Unduh Backup</button>
+      <button class="secondary" onclick="document.getElementById('backupFile').click()">⬆️ Pulihkan Backup</button>
+    </div>
+    <input id="backupFile" class="file-input" type="file"
+      accept=".json,application/json"
+      onchange="importBackup(event)" style="display:none">
+    <p class="muted">
+      Simpan file backup di tempat aman. Pemulihan akan mengganti
+      daftar proyek saat ini.
+    </p>
   </div>
 
   <div class="panel">
@@ -396,6 +399,7 @@ footer {
     <button class="tab active" data-tab="info" onclick="openTab('info')">Informasi</button>
     <button class="tab" data-tab="story" onclick="openTab('story')">Story Memory</button>
     <button class="tab" data-tab="characters" onclick="openTab('characters')">Characters</button>
+    <button class="tab" data-tab="locations" onclick="openTab('locations')">Locations</button>
     <button class="tab" data-tab="episodes" onclick="openTab('episodes')">Episodes</button>
     <button class="tab" data-tab="production" onclick="openTab('production')">Production</button>
   </div>
@@ -460,10 +464,41 @@ footer {
     <label>Latar belakang</label>
     <textarea id="charBackground" placeholder="Asal-usul dan kisah hidup tokoh..."></textarea>
 
+    <label>Lokasi yang terkait (bisa pilih beberapa)</label>
+    <select id="charLocations" multiple size="5"></select>
+    <p class="muted">Tekan Ctrl atau gunakan pilihan beberapa item untuk memilih lebih dari satu lokasi.</p>
+
     <button class="primary" onclick="addCharacter()">＋ Tambahkan Karakter</button>
 
     <h3>Daftar Karakter</h3>
     <div id="characterList"></div>
+  </div>
+
+  <div id="tab-locations" class="panel hidden">
+    <h2>🗺️ Database Lokasi</h2>
+    <p class="muted">
+      Buat dan kelola tempat-tempat penting dalam dunia cerita.
+      Lokasi dapat dihubungkan dengan karakter.
+    </p>
+
+    <button class="secondary" onclick="addSampleLocations()">＋ Tambahkan 15 Lokasi THE LAST HORIZON</button>
+
+    <label>Nama lokasi</label>
+    <input id="locationName" placeholder="Nama tempat">
+
+    <label>Jenis lokasi</label>
+    <input id="locationType" placeholder="Kota, hutan, gua, markas...">
+
+    <label>Deskripsi lokasi</label>
+    <textarea id="locationDescription" placeholder="Suasana, bentuk, dan ciri khas lokasi..."></textarea>
+
+    <label>Peristiwa penting di lokasi</label>
+    <textarea id="locationEvents" placeholder="Kejadian yang berlangsung di tempat ini..."></textarea>
+
+    <button class="primary" onclick="addLocation()">＋ Simpan Lokasi</button>
+
+    <h3>Daftar Lokasi</h3>
+    <div id="locationList"></div>
   </div>
 
   <div id="tab-episodes" class="panel hidden">
@@ -534,7 +569,7 @@ footer {
   <button onclick="showPage('projectsPage')"><span>📖</span>Story</button>
 </nav>
 
-<script>
+  <script>
 const STORAGE_KEY = "liveaction_ai_projects_v2";
 
 let projects = [];
@@ -549,7 +584,6 @@ function loadProjects() {
     projects = [];
   }
 
-  // Migrasi data proyek dari versi sebelumnya.
   projects = projects.map((p, index) => ({
     id: p.id || String(Date.now() + index),
     title: p.title || p.name || "Proyek Tanpa Judul",
@@ -564,6 +598,7 @@ function loadProjects() {
       continuity: ""
     },
     characters: Array.isArray(p.characters) ? p.characters : [],
+    locations: Array.isArray(p.locations) ? p.locations : [],
     episodes: Array.isArray(p.episodes) ? p.episodes : [],
     production: p.production || {
       visual: "",
@@ -577,7 +612,11 @@ function loadProjects() {
 }
 
 function saveAll() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  } catch (error) {
+    alert("Penyimpanan gagal. Periksa ruang penyimpanan browser.");
+  }
 }
 
 function showPage(pageId) {
@@ -614,6 +653,7 @@ function createProject() {
       continuity: ""
     },
     characters: [],
+    locations: [],
     episodes: [],
     production: {
       visual: "",
@@ -669,6 +709,7 @@ function openProject(id) {
   fillStory();
   fillProduction();
   renderCharacters();
+  renderLocations();
   renderEpisodes();
 
   showPage("detailPage");
@@ -680,13 +721,24 @@ function getCurrent() {
 }
 
 function openTab(tab) {
-  const tabs = ["info", "story", "characters", "episodes", "production"];
+  const tabs = [
+    "info",
+    "story",
+    "characters",
+    "locations",
+    "episodes",
+    "production"
+  ];
 
   tabs.forEach(name => {
-    document.getElementById("tab-" + name).classList.toggle("hidden", name !== tab);
+    document.getElementById("tab-" + name)
+      .classList.toggle("hidden", name !== tab);
 
     const button = document.querySelector('[data-tab="' + name + '"]');
-    button.classList.toggle("active", name === tab);
+
+    if (button) {
+      button.classList.toggle("active", name === tab);
+    }
   });
 }
 
@@ -706,7 +758,9 @@ function saveInfo() {
   p.description = document.getElementById("editDescription").value.trim();
 
   saveAll();
+
   document.getElementById("detailTitle").textContent = p.title;
+
   alert("Informasi proyek berhasil disimpan.");
 }
 
@@ -739,6 +793,10 @@ function saveStory() {
   alert("Story Memory berhasil disimpan.");
 }
 
+/* =========================
+   CHARACTERS
+========================= */
+
 function addCharacter() {
   const p = getCurrent();
   if (!p) return;
@@ -750,19 +808,34 @@ function addCharacter() {
     return;
   }
 
+  const selectedLocations = Array.from(
+    document.getElementById("charLocations").selectedOptions
+  ).map(option => option.value);
+
   p.characters.push({
-    id: String(Date.now()),
+    id: String(Date.now()) + Math.random().toString(16).slice(2),
     name,
     age: document.getElementById("charAge").value.trim(),
     appearance: document.getElementById("charAppearance").value.trim(),
     personality: document.getElementById("charPersonality").value.trim(),
-    background: document.getElementById("charBackground").value.trim()
+    background: document.getElementById("charBackground").value.trim(),
+    locationIds: selectedLocations
   });
 
   saveAll();
 
-  ["charName", "charAge", "charAppearance", "charPersonality", "charBackground"]
-    .forEach(id => document.getElementById(id).value = "");
+  [
+    "charName",
+    "charAge",
+    "charAppearance",
+    "charPersonality",
+    "charBackground"
+  ].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+
+  Array.from(document.getElementById("charLocations").options)
+    .forEach(option => option.selected = false);
 
   renderCharacters();
   alert("Karakter berhasil ditambahkan.");
@@ -774,29 +847,216 @@ function renderCharacters() {
 
   if (!p || p.characters.length === 0) {
     list.innerHTML = '<div class="empty">Belum ada karakter.</div>';
+    renderCharacterLocationOptions();
     return;
   }
 
-  list.innerHTML = p.characters.map(c => `
-    <div class="item">
-      <h3>${escapeHTML(c.name)}</h3>
-      <p><strong>Usia:</strong> ${escapeHTML(c.age || "-")}</p>
-      <p><strong>Penampilan:</strong><br>${escapeHTML(c.appearance || "-")}</p>
-      <p><strong>Kepribadian:</strong><br>${escapeHTML(c.personality || "-")}</p>
-      <p><strong>Latar belakang:</strong><br>${escapeHTML(c.background || "-")}</p>
-      <button class="danger" onclick="deleteCharacter('${c.id}')">Hapus Karakter</button>
-    </div>
+  list.innerHTML = p.characters.map(c => {
+    const locationNames = (c.locationIds || [])
+      .map(id => p.locations.find(loc => loc.id === id))
+      .filter(Boolean)
+      .map(loc => escapeHTML(loc.name));
+
+    return `
+      <div class="item">
+        <h3>${escapeHTML(c.name)}</h3>
+        <p><strong>Usia:</strong> ${escapeHTML(c.age || "-")}</p>
+        <p><strong>Penampilan:</strong><br>${escapeHTML(c.appearance || "-")}</p>
+        <p><strong>Kepribadian:</strong><br>${escapeHTML(c.personality || "-")}</p>
+        <p><strong>Latar belakang:</strong><br>${escapeHTML(c.background || "-")}</p>
+        <p><strong>Lokasi terkait:</strong><br>
+          ${locationNames.length
+            ? locationNames.map(name => `<span class="location-tag">${name}</span>`).join("")
+            : "Belum ada lokasi"}
+        </p>
+        <button class="danger" onclick="deleteCharacter('${c.id}')">
+          Hapus Karakter
+        </button>
+      </div>
+    `;
+  }).join("");
+
+  renderCharacterLocationOptions();
+}
+
+function renderCharacterLocationOptions() {
+  const p = getCurrent();
+  const select = document.getElementById("charLocations");
+
+  if (!p || !select) return;
+
+  const previous = Array.from(select.selectedOptions)
+    .map(option => option.value);
+
+  select.innerHTML = p.locations.map(loc => `
+    <option value="${escapeHTML(loc.id)}">
+      ${escapeHTML(loc.name)}
+    </option>
   `).join("");
+
+  Array.from(select.options).forEach(option => {
+    option.selected = previous.includes(option.value);
+  });
 }
 
 function deleteCharacter(id) {
   const p = getCurrent();
+
   if (!p || !confirm("Hapus karakter ini?")) return;
 
   p.characters = p.characters.filter(c => c.id !== id);
+
   saveAll();
   renderCharacters();
 }
+
+/* =========================
+   LOCATIONS
+========================= */
+
+function addLocation() {
+  const p = getCurrent();
+  if (!p) return;
+
+  const name = document.getElementById("locationName").value.trim();
+
+  if (!name) {
+    alert("Masukkan nama lokasi.");
+    return;
+  }
+
+  p.locations.push({
+    id: String(Date.now()) + Math.random().toString(16).slice(2),
+    name,
+    type: document.getElementById("locationType").value.trim(),
+    description: document.getElementById("locationDescription").value.trim(),
+    events: document.getElementById("locationEvents").value.trim()
+  });
+
+  saveAll();
+
+  [
+    "locationName",
+    "locationType",
+    "locationDescription",
+    "locationEvents"
+  ].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+
+  renderLocations();
+  alert("Lokasi berhasil ditambahkan.");
+}
+
+function renderLocations() {
+  const p = getCurrent();
+  const list = document.getElementById("locationList");
+
+  if (!p || p.locations.length === 0) {
+    list.innerHTML = '<div class="empty">Belum ada lokasi.</div>';
+    renderCharacterLocationOptions();
+    return;
+  }
+
+  list.innerHTML = p.locations.map((loc, index) => {
+    const linkedCharacters = p.characters
+      .filter(c => (c.locationIds || []).includes(loc.id))
+      .map(c => escapeHTML(c.name));
+
+    return `
+      <div class="item">
+        <h3>${index + 1}. ${escapeHTML(loc.name)}</h3>
+        <p><strong>Jenis:</strong> ${escapeHTML(loc.type || "-")}</p>
+        <p><strong>Deskripsi:</strong><br>${escapeHTML(loc.description || "-")}</p>
+        <p><strong>Peristiwa:</strong><br>${escapeHTML(loc.events || "-")}</p>
+        <p><strong>Karakter terkait:</strong><br>
+          ${linkedCharacters.length
+            ? linkedCharacters.join(", ")
+            : "Belum ada karakter"}
+        </p>
+        <button class="danger" onclick="deleteLocation('${loc.id}')">
+          Hapus Lokasi
+        </button>
+      </div>
+    `;
+  }).join("");
+
+  renderCharacterLocationOptions();
+}
+
+function deleteLocation(id) {
+  const p = getCurrent();
+
+  if (!p || !confirm("Hapus lokasi ini?")) return;
+
+  p.locations = p.locations.filter(loc => loc.id !== id);
+
+  p.characters.forEach(c => {
+    c.locationIds = (c.locationIds || []).filter(locationId => locationId !== id);
+  });
+
+  saveAll();
+  renderLocations();
+  renderCharacters();
+}
+
+/* =========================
+   15 SAMPLE LOCATIONS
+========================= */
+
+function addSampleLocations() {
+  const p = getCurrent();
+  if (!p) return;
+
+  const samples = [
+    ["Kota Arunika", "Kota modern", "Kota besar tempat Arka memulai petualangannya.", "Awal penemuan petunjuk peta kuno."],
+    ["Gudang Tua", "Bangunan terbengkalai", "Gudang berdebu yang menyimpan peninggalan keluarga Mahendra.", "Arka menemukan peta peninggalan ayahnya."],
+    ["Hutan Kalimaya", "Hutan lebat", "Hutan tropis penuh jalur tersembunyi dan bahaya.", "Perjalanan pertama kelompok Arka."],
+    ["Kuil Seribu Bayangan", "Kuil kuno", "Kuil misterius dengan lorong dan teka-teki.", "Kelompok menemukan petunjuk menuju pegunungan."],
+    ["Pegunungan Arvand", "Pegunungan", "Pegunungan tinggi dengan cuaca ekstrem.", "Kelompok menghadapi badai dan ancaman Obsidian."],
+    ["Gurun Merah", "Gurun", "Hamparan pasir merah yang luas dan panas.", "Perjalanan melintasi gurun menuju gua kristal."],
+    ["Gua Kristal", "Gua bawah tanah", "Gua dengan kristal bercahaya dan formasi batu unik.", "Penemuan teknologi kuno."],
+    ["Markas Obsidian", "Markas rahasia", "Pusat operasi organisasi yang memburu peta.", "Konflik dengan Adrian Voss."],
+    ["Desa Pesisir Nawasena", "Desa pesisir", "Desa nelayan yang menjadi tempat persinggahan.", "Kelompok memperoleh bantuan warga."],
+    ["Air Terjun Tersembunyi", "Air terjun", "Air terjun terpencil yang menyembunyikan jalan masuk.", "Penemuan jalur rahasia."],
+    ["Jembatan Batu", "Jembatan kuno", "Jembatan batu tua di atas jurang dalam.", "Kelompok dikejar pasukan Obsidian."],
+    ["Lapangan Terbang Terlantar", "Lapangan terbang", "Landasan lama yang tidak lagi digunakan.", "Persiapan perjalanan menuju wilayah terpencil."],
+    ["Perpustakaan Bawah Tanah", "Perpustakaan kuno", "Ruang arsip yang menyimpan sejarah peradaban lama.", "Terungkapnya rahasia peta."],
+    ["Kota yang Hilang", "Kota kuno", "Kota tersembunyi dengan arsitektur dan teknologi kuno.", "Arka menemukan kebenaran tentang ayahnya."],
+    ["Ruang Inti Horizon", "Ruang teknologi", "Ruang pusat dengan teknologi yang dapat mengubah masa depan.", "Konfrontasi terakhir dan keputusan Arka."]
+  ];
+
+  let added = 0;
+
+  samples.forEach(sample => {
+    const exists = p.locations.some(
+      loc => loc.name.toLowerCase() === sample[0].toLowerCase()
+    );
+
+    if (!exists) {
+      p.locations.push({
+        id: String(Date.now()) + Math.random().toString(16).slice(2),
+        name: sample[0],
+        type: sample[1],
+        description: sample[2],
+        events: sample[3]
+      });
+
+      added++;
+    }
+  });
+
+  saveAll();
+  renderLocations();
+
+  alert(added
+    ? added + " lokasi contoh berhasil ditambahkan."
+    : "Semua lokasi contoh sudah ada di proyek ini.");
+}
+
+/* =========================
+   EPISODES
+========================= */
 
 function addEpisode() {
   const p = getCurrent();
@@ -839,19 +1099,27 @@ function renderEpisodes() {
       <h3>${index + 1}. ${escapeHTML(e.title)}</h3>
       <p><strong>Ringkasan:</strong><br>${escapeHTML(e.summary || "-")}</p>
       <p><strong>Catatan akhir:</strong><br>${escapeHTML(e.ending || "-")}</p>
-      <button class="danger" onclick="deleteEpisode('${e.id}')">Hapus Episode</button>
+      <button class="danger" onclick="deleteEpisode('${e.id}')">
+        Hapus Episode
+      </button>
     </div>
   `).join("");
 }
 
 function deleteEpisode(id) {
   const p = getCurrent();
+
   if (!p || !confirm("Hapus episode ini?")) return;
 
   p.episodes = p.episodes.filter(e => e.id !== id);
+
   saveAll();
   renderEpisodes();
 }
+
+/* =========================
+   PRODUCTION
+========================= */
 
 function fillProduction() {
   const p = getCurrent();
@@ -882,13 +1150,19 @@ function saveProduction() {
 
 function deleteCurrentProject() {
   const p = getCurrent();
+
   if (!p || !confirm("Yakin ingin menghapus seluruh proyek ini?")) return;
 
   projects = projects.filter(item => item.id !== currentId);
   currentId = null;
+
   saveAll();
   showPage("projectsPage");
 }
+
+/* =========================
+   HTML SAFETY
+========================= */
 
 function escapeHTML(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -900,10 +1174,120 @@ function escapeHTML(value) {
   })[char]);
 }
 
+    function exportBackup() {
+  const data = {
+    app: "LiveAction AI",
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    projects
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: "application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download =
+    "liveaction-ai-backup-" +
+    new Date().toISOString().slice(0, 10) +
+    ".json";
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+function importBackup(event) {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+
+      const incoming = Array.isArray(parsed)
+        ? parsed
+        : parsed.projects;
+
+      if (!Array.isArray(incoming)) {
+        throw new Error("Format file backup tidak valid.");
+      }
+
+      const confirmed = confirm(
+        "Restore backup akan mengganti daftar proyek yang tersimpan saat ini. " +
+        "Pastikan Anda sudah mengunduh backup terbaru sebelum melanjutkan. " +
+        "Lanjutkan?"
+      );
+
+      if (!confirmed) {
+        event.target.value = "";
+        return;
+      }
+
+      projects = incoming.map((p) => ({
+        ...p,
+        characters: Array.isArray(p.characters)
+          ? p.characters.map((c) => ({
+              ...c,
+              locationIds: Array.isArray(c.locationIds)
+                ? c.locationIds
+                : []
+            }))
+          : [],
+        locations: Array.isArray(p.locations)
+          ? p.locations
+          : [],
+        episodes: Array.isArray(p.episodes)
+          ? p.episodes
+          : [],
+        production: p.production || {}
+      }));
+
+      saveAll();
+      renderProjects();
+      showPage("homePage");
+
+      alert(
+        "Backup berhasil dipulihkan! " +
+        projects.length +
+        " proyek telah dimuat."
+      );
+
+    } catch (error) {
+      alert(
+        "Gagal memulihkan backup. " +
+        "Pastikan file JSON yang dipilih benar."
+      );
+
+      console.error(error);
+
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  reader.onerror = function () {
+    alert("File backup tidak dapat dibaca.");
+    event.target.value = "";
+  };
+
+  reader.readAsText(file);
+}
+
+// Inisialisasi aplikasi
 loadProjects();
 renderProjects();
 showPage("homePage");
-</script>
 
+</script>
 </body>
 </html>
