@@ -1289,5 +1289,129 @@ renderProjects();
 showPage("homePage");
 
 </script>
+
+<!-- PEMERIKSAAN DAN PENYELAMATAN DATA PROYEK -->
+<div id="recoveryPanel" style="
+  position:fixed;
+  inset:0;
+  z-index:999999;
+  background:#101827;
+  color:#ffffff;
+  padding:20px;
+  overflow:auto;
+  font-family:Arial,sans-serif;
+">
+  <h2>🔍 Pemeriksaan Data LiveAction AI</h2>
+
+  <p>
+    Halaman ini hanya membaca data yang tersimpan
+    di browser. Tidak ada data yang dihapus.
+  </p>
+
+  <button
+    onclick="checkRecoveryData()"
+    style="padding:12px;margin:5px 0;width:100%;"
+  >
+    Periksa Data Proyek
+  </button>
+
+  <button
+    onclick="downloadRecoveryData()"
+    style="padding:12px;margin:5px 0;width:100%;"
+  >
+    Simpan Salinan Data
+  </button>
+
+  <pre id="recoveryResult" style="
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    background:#1e293b;
+    padding:12px;
+    border-radius:8px;
+  ">Tekan tombol Periksa Data Proyek.</pre>
+
+  <button
+    onclick="document.getElementById('recoveryPanel').remove()"
+    style="padding:12px;margin:5px 0;width:100%;"
+  >
+    Tutup Pemeriksaan
+  </button>
+</div>
+
+<script>
+function checkRecoveryData() {
+  const result = document.getElementById("recoveryResult");
+
+  try {
+    const raw = localStorage.getItem(
+      "liveaction_ai_projects_v2"
+    );
+
+    if (!raw) {
+      result.textContent =
+        "Tidak ditemukan data pada penyimpanan utama.";
+      return;
+    }
+
+    const data = JSON.parse(raw);
+
+    if (!Array.isArray(data)) {
+      result.textContent =
+        "Data ditemukan, tetapi formatnya bukan daftar proyek.";
+      return;
+    }
+
+    result.textContent =
+      "Jumlah proyek ditemukan: " + data.length + "\n\n" +
+      data.map((p, i) =>
+        (i + 1) + ". " + (p.name || "Tanpa nama") +
+        "\n   ID: " + (p.id || "Tidak tersedia") +
+        "\n   Karakter: " + (p.characters?.length || 0) +
+        "\n   Lokasi: " + (p.locations?.length || 0) +
+        "\n   Episode: " + (p.episodes?.length || 0)
+      ).join("\n\n");
+
+  } catch (error) {
+    result.textContent =
+      "Terjadi kesalahan saat membaca data: " + error.message;
+  }
+}
+
+function downloadRecoveryData() {
+  try {
+    const raw = localStorage.getItem(
+      "liveaction_ai_projects_v2"
+    );
+
+    if (!raw) {
+      alert("Tidak ada data yang bisa disimpan.");
+      return;
+    }
+
+    const blob = new Blob(
+      [raw],
+      { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "liveaction-ai-recovery.json";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+    alert("Salinan data berhasil disiapkan.");
+
+  } catch (error) {
+    alert("Gagal menyimpan data: " + error.message);
+  }
+}
+</script>
+  
 </body>
 </html>
