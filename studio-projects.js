@@ -149,6 +149,13 @@
       ].join(";");
 
       openButton.addEventListener("click", function () {
+  if (window.LiveActionStudioWorkspace) {
+    window.LiveActionStudioWorkspace.open(project.id);
+  } else {
+    status.textContent =
+      "Ruang kerja belum berhasil dimuat. Muat ulang halaman.";
+  }
+});
         status.textContent =
           "Proyek dipilih: " + project.name +
           ". Pengelolaan episode dan karakter akan ditambahkan pada tahap berikutnya.";
