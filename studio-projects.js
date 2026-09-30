@@ -156,12 +156,6 @@
       "Ruang kerja belum berhasil dimuat. Muat ulang halaman.";
   }
 });
-        status.textContent =
-          "Proyek dipilih: " + project.name +
-          ". Pengelolaan episode dan karakter akan ditambahkan pada tahap berikutnya.";
-
-        panel.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
 
       card.append(title, description, stats, date, openButton);
       return card;
