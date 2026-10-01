@@ -662,11 +662,15 @@ document.querySelectorAll("[data-page]").forEach(button => {
 });
 
 // Save project settings
-document.getElementById("startBtn").addEventListener("click", function() {
+document.getElementById("startBtn").addEventListener("click", async function() {
   if (!videoInput.files.length) {
     alert("Silakan pilih video terlebih dahulu.");
     return;
   }
+
+  const button = document.getElementById("startBtn");
+  button.disabled = true;
+  button.textContent = "Menghubungkan ke backend...";
 
   const project = {
     id: Date.now().toString(),
@@ -675,32 +679,54 @@ document.getElementById("startBtn").addEventListener("click", function() {
     style: selectedStyle,
     prompt: document.getElementById("prompt").value.trim(),
     createdAt: new Date().toLocaleString("id-ID"),
-    status: "Menunggu integrasi mesin AI"
+    status: "Mengirim pengaturan ke backend"
   };
 
-  projects.unshift(project);
-
   try {
+    const response = await fetch(
+      "https://liveaction-ai-backend.natafikri86.workers.dev/api/jobs",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(project)
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Backend menolak permintaan.");
+    }
+
+    project.status = result.status || "Pengaturan diterima backend";
+
+    projects.unshift(project);
+
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify(projects)
     );
+
+    alert(
+      "Pengaturan berhasil dikirim ke backend!\n\n" +
+      "Mode: " + project.mode +
+      "\nGaya: " + project.style +
+      "\nStatus: " + project.status
+    );
+
+    renderProjects();
+
   } catch (error) {
-    alert("Pengaturan tidak dapat disimpan di browser.");
-    return;
+    alert(
+      "Belum berhasil menghubungi backend.\n\n" +
+      error.message
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "✨ Siapkan Transformasi";
   }
-
-  alert(
-    "Pengaturan transformasi berhasil disimpan!\n\n" +
-    "Mode: " +
-    (selectedMode === "live"
-      ? "Animation to Live Action"
-      : "Live Action to 3D") +
-    "\nGaya: " + selectedStyle +
-    "\n\nPemrosesan AI akan diaktifkan setelah mesin video terhubung."
-  );
-
-  renderProjects();
 });
 
 // Project history
