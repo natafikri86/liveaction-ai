@@ -664,86 +664,101 @@ document.querySelectorAll("[data-page]").forEach(button => {
 // Save project settings
 
 document.getElementById("startBtn").addEventListener("click", async function() {
-  if (!videoInput.files.length) {
-    alert("Silakan pilih video terlebih dahulu.");
-    return;
-  }
 
-  const project = {
-    id: Date.now().toString(),
-    fileName: videoInput.files[0].name,
-    mode: selectedMode,
-    style: selectedStyle,
-    prompt: document.getElementById("prompt").value.trim(),
-    createdAt: new Date().toLocaleString("id-ID"),
-    status: "Menunggu mesin AI"
-  };
+if (!videoInput.files.length) {
+  alert("Silakan pilih video terlebih dahulu.");
+  return;
+}
 
-  const startBtn = document.getElementById("startBtn");
-  startBtn.disabled = true;
-  startBtn.textContent = "Menghubungi backend...";
+const videoFile = videoInput.files[0];
 
-  try {
-    const response = await fetch(
-      "https://liveaction-ai-backend.natafikri86.workers.dev/api/jobs",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(project)
-      }
-    );
+const project = {
+  id: Date.now().toString(),
+  fileName: videoFile.name,
+  mode: selectedMode,
+  style: selectedStyle,
+  prompt: document.getElementById("prompt").value.trim(),
+  createdAt: new Date().toLocaleString("id-ID"),
+  status: "Menunggu mesin AI"
+};
 
-    const result = await response.json();
+const startBtn = document.getElementById("startBtn");
+startBtn.disabled = true;
+startBtn.textContent = "Mengirim video...";
 
-    if (response.ok) {
-      project.status = "Terkirim ke backend";
-    } else {
-      project.status = "Tersimpan lokal — AI belum terhubung";
+try {
+  const formData = new FormData();
+
+  formData.append("video", videoFile);
+  formData.append("mode", project.mode);
+  formData.append("style", project.style);
+  formData.append("prompt", project.prompt);
+
+  const response = await fetch(
+    "https://liveaction-ai-backend.natafikri86.workers.dev/api/jobs",
+    {
+      method: "POST",
+      body: formData
     }
+  );
 
-    projects.unshift(project);
+  const result = await response.json();
 
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(projects)
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Backend menolak permintaan."
     );
-
-    renderProjects();
-
-    alert(
-      "Proyek berhasil disimpan!\n\n" +
-      "Nama video: " + project.fileName +
-      "\nGaya: " + project.style +
-      "\nStatus: " + project.status +
-      "\n\nRespons backend: " +
-      (result.message || result.status || "Tidak ada pesan")
-    );
-
-  } catch (error) {
-    project.status = "Tersimpan lokal — koneksi backend gagal";
-
-    projects.unshift(project);
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(projects)
-    );
-
-    renderProjects();
-
-    alert(
-      "Proyek berhasil disimpan di perangkat.\n\n" +
-      "Namun, backend belum dapat dihubungi.\n" +
-      "Pesan: " + error.message
-    );
-
-  } finally {
-    startBtn.disabled = false;
-    startBtn.textContent = "✨ Siapkan Transformasi";
   }
-});
+
+  project.status = result.taskId
+    ? "AI sedang memproses"
+    : "Terkirim ke backend";
+
+  project.taskId = result.taskId || null;
+
+  projects.unshift(project);
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(projects)
+  );
+
+  renderProjects();
+
+  alert(
+    "Video berhasil dikirim ke backend!\n\n" +
+    "Nama video: " + project.fileName +
+    "\nGaya: " + project.style +
+    "\nStatus: " + project.status +
+    (project.taskId
+      ? "\nID tugas: " + project.taskId
+      : "") +
+    "\n\nPesan: " +
+    (result.message || "Permintaan diterima.")
+  );
+
+} catch (error) {
+  project.status = "Tersimpan lokal — " + error.message;
+
+  projects.unshift(project);
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(projects)
+  );
+
+  renderProjects();
+
+  alert(
+    "Proyek berhasil disimpan di perangkat.\n\n" +
+    "Namun, proses AI belum berhasil dimulai.\n" +
+    "Pesan: " + error.message
+  );
+
+} finally {
+  startBtn.disabled = false;
+  startBtn.textContent = "✨ Siapkan Transformasi";
+}
 
 // Project history
 function renderProjects() {
