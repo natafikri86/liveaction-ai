@@ -25,6 +25,16 @@ export default {
       });
     }
 
+    if (url.pathname === "/api/jobs" && request.method === "GET") {
+  return Response.json({
+    endpoint: "LiveAction AI Jobs",
+    method: "POST",
+    status: "ready",
+    message: "Endpoint pekerjaan aktif. Gunakan POST untuk mengirim pekerjaan video."
+  }, {
+    headers: corsHeaders
+  });
+}
     if (url.pathname === "/api/jobs" && request.method === "POST") {
       return Response.json({
         success: false,
