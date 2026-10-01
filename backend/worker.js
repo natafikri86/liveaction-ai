@@ -1,8 +1,12 @@
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, HEAD, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
+
+const MAX_VIDEO_SIZE = 32 * 1024 * 1024;
+const VIDEO_TTL_MS = 24 * 60 * 60 * 1000;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -17,9 +21,7 @@ function json(data, status = 200) {
 async function readApiResponse(response) {
   const text = await response.text();
 
-  if (!text) {
-    return {};
-  }
+  if (!text) return {};
 
   try {
     return JSON.parse(text);
@@ -28,32 +30,93 @@ async function readApiResponse(response) {
   }
 }
 
-function getErrorMessage(data) {
-  if (!data) {
-    return "Tidak ada detail kesalahan dari layanan.";
-  }
-
-  if (typeof data === "string") {
-    return data;
-  }
+function errorMessage(data) {
+  if (typeof data === "string") return data;
 
   return (
-    data.message ||
-    data.error ||
-    data.detail ||
-    data.title ||
-    JSON.stringify(data)
+    data?.message ||
+    data?.error ||
+    data?.detail ||
+    data?.title ||
+    JSON.stringify(data || {})
   );
 }
 
-function apiError(message, detail, status = 502) {
-  const explanation = getErrorMessage(detail);
-
+function runwayError(message, detail, status = 502) {
   return json({
     success: false,
-    message: message + " Detail: " + explanation,
+    message: message + " Detail: " + errorMessage(detail),
     detail: detail || null
   }, status);
+}
+
+function getAssetId(pathname) {
+  const match = pathname.match(
+    /^\/assets\/([0-9a-f-]{36})$/i
+  );
+
+  return match ? match[1] : null;
+}
+
+async function serveAsset(request, env, assetId) {
+  if (!env.VIDEO_BUCKET) {
+    return new Response("Video storage is not configured.", {
+      status: 500
+    });
+  }
+
+  const object = await env.VIDEO_BUCKET.get(assetId);
+
+  if (!object) {
+    return new Response("Video not found or expired.", {
+      status: 404
+    });
+  }
+
+  const headers = new Headers({
+    "Content-Type":
+      object.httpMetadata?.contentType || "video/mp4",
+    "Content-Length": String(object.size),
+    "Cache-Control": "private, no-store",
+    "Accept-Ranges": "bytes",
+    "X-Content-Type-Options": "nosniff"
+  });
+
+  if (request.method === "HEAD") {
+    return new Response(null, {
+      status: 200,
+      headers
+    });
+  }
+
+  return new Response(object.body, {
+    status: 200,
+    headers
+  });
+}
+
+async function cleanupExpiredVideos(env) {
+  if (!env.VIDEO_BUCKET) return;
+
+  const cutoff = Date.now() - VIDEO_TTL_MS;
+  let cursor;
+
+  do {
+    const page = await env.VIDEO_BUCKET.list({
+      limit: 1000,
+      cursor
+    });
+
+    const expired = page.objects
+      .filter(object => object.uploaded.getTime() < cutoff)
+      .map(object => object.key);
+
+    if (expired.length) {
+      await env.VIDEO_BUCKET.delete(expired);
+    }
+
+    cursor = page.truncated ? page.cursor : undefined;
+  } while (cursor);
 }
 
 export default {
@@ -66,37 +129,58 @@ export default {
     }
 
     const url = new URL(request.url);
+    const path = url.pathname;
 
-    // Pemeriksaan kesehatan backend
-    if (url.pathname === "/health") {
+    // Health check
+    if (path === "/health") {
       return json({
         status: "ok",
         service: "LiveAction AI Backend",
         engine: env.RUNWAY_API_KEY
           ? "configured"
           : "missing_key",
-        availableBindings: Object.keys(env)
+        storage: env.VIDEO_BUCKET
+          ? "configured"
+          : "missing_bucket"
       });
     }
 
-    // Informasi endpoint pekerjaan
-    if (
-      url.pathname === "/api/jobs" &&
-      request.method === "GET"
-    ) {
+    // Serve temporary video to Runway
+    if (path.startsWith("/assets/")) {
+      if (
+        request.method !== "GET" &&
+        request.method !== "HEAD"
+      ) {
+        return new Response("Method not allowed.", {
+          status: 405,
+          headers: {
+            ...corsHeaders,
+            "Allow": "GET, HEAD"
+          }
+        });
+      }
+
+      const assetId = getAssetId(path);
+
+      if (!assetId) {
+        return new Response("Invalid asset ID.", {
+          status: 400
+        });
+      }
+
+      return serveAsset(request, env, assetId);
+    }
+
+    // Jobs endpoint
+    if (path === "/api/jobs" && request.method === "GET") {
       return json({
         endpoint: "LiveAction AI Jobs",
         method: "POST",
-        status: "ready",
-        message: "Backend siap menerima video."
+        status: "ready"
       });
     }
 
-    // Membuat pekerjaan transformasi video
-    if (
-      url.pathname === "/api/jobs" &&
-      request.method === "POST"
-    ) {
+    if (path === "/api/jobs" && request.method === "POST") {
       if (!env.RUNWAY_API_KEY) {
         return json({
           success: false,
@@ -104,10 +188,19 @@ export default {
         }, 500);
       }
 
+      if (!env.VIDEO_BUCKET) {
+        return json({
+          success: false,
+          message: "VIDEO_BUCKET belum dikonfigurasi."
+        }, 500);
+      }
+
+      let assetId;
+
       try {
         const form = await request.formData();
-
         const video = form.get("video");
+
         const style =
           form.get("style") || "Cinematic Realism";
         const mode = form.get("mode") || "live";
@@ -127,11 +220,19 @@ export default {
           }, 400);
         }
 
-        if (video.size > 80 * 1024 * 1024) {
+        if (video.size > MAX_VIDEO_SIZE) {
           return json({
             success: false,
-            message: "Ukuran video maksimal 80 MB."
+            message:
+              "Ukuran video maksimal 32 MB untuk URL input Runway."
           }, 413);
+        }
+
+        if (video.size < 512) {
+          return json({
+            success: false,
+            message: "Ukuran video terlalu kecil."
+          }, 400);
         }
 
         const prompt = [
@@ -143,83 +244,30 @@ export default {
           userPrompt
         ].filter(Boolean).join(" ");
 
-        // Meminta URL upload sementara dari Runway
-        const uploadResponse = await fetch(
-          "https://api.dev.runwayml.com/v1/uploads",
+        // Save video in private R2 bucket
+        assetId = crypto.randomUUID();
+
+        await env.VIDEO_BUCKET.put(
+          assetId,
+          video.stream(),
           {
-            method: "POST",
-            headers: {
-              "Authorization":
-                "Bearer " + env.RUNWAY_API_KEY,
-              "Content-Type": "application/json",
-              "X-Runway-Version": "2024-11-06"
+            httpMetadata: {
+              contentType: video.type || "video/mp4"
             },
-            body: JSON.stringify({
-              filename: video.name || "input.mp4",
-              type: "ephemeral"
-            })
+            customMetadata: {
+              originalName: video.name || "input.mp4",
+              createdAt: new Date().toISOString()
+            }
           }
         );
 
-        const uploadInfo =
-          await readApiResponse(uploadResponse);
+        // Create direct HTTPS URL for Runway
+        const videoUrl = new URL(
+          "/assets/" + assetId,
+          url.origin
+        ).toString();
 
-        if (!uploadResponse.ok) {
-          return apiError(
-            "Runway gagal menyiapkan upload.",
-            uploadInfo,
-            uploadResponse.status
-          );
-        }
-
-        if (
-          !uploadInfo.uploadUrl ||
-          !uploadInfo.runwayUri
-        ) {
-          return apiError(
-            "Respons upload Runway tidak lengkap.",
-            uploadInfo,
-            502
-          );
-        }
-
-        // Mengirim video ke penyimpanan sementara Runway
-        const uploadForm = new FormData();
-
-        for (
-          const [key, value] of Object.entries(
-            uploadInfo.fields || {}
-          )
-        ) {
-          uploadForm.append(key, value);
-        }
-
-        uploadForm.append(
-          "file",
-          video,
-          video.name || "input.mp4"
-        );
-
-        const fileUpload = await fetch(
-          uploadInfo.uploadUrl,
-          {
-            method: "POST",
-            body: uploadForm
-          }
-        );
-
-        if (!fileUpload.ok) {
-          const uploadError =
-            await readApiResponse(fileUpload);
-
-          return apiError(
-            "Upload video ke Runway gagal.",
-            uploadError,
-            502
-          );
-        }
-
-        // Memulai transformasi video
+        // Start Runway video-to-video task
         const taskResponse = await fetch(
           "https://api.dev.runwayml.com/v1/video_to_video",
           {
@@ -232,17 +280,16 @@ export default {
             },
             body: JSON.stringify({
               model: "aleph2",
-              videoUri: uploadInfo.runwayUri,
+              videoUri: videoUrl,
               promptText: prompt
             })
           }
         );
 
-        const task =
-          await readApiResponse(taskResponse);
+        const task = await readApiResponse(taskResponse);
 
         if (!taskResponse.ok) {
-          return apiError(
+          return runwayError(
             "Runway gagal memulai transformasi.",
             task,
             taskResponse.status
@@ -250,7 +297,7 @@ export default {
         }
 
         if (!task.id) {
-          return apiError(
+          return runwayError(
             "Runway tidak mengembalikan ID tugas.",
             task,
             502
@@ -266,19 +313,27 @@ export default {
         }, 202);
 
       } catch (error) {
+        // Remove uploaded source if task creation failed
+        if (assetId && env.VIDEO_BUCKET) {
+          try {
+            await env.VIDEO_BUCKET.delete(assetId);
+          } catch {
+            // Scheduled cleanup will remove leftovers.
+          }
+        }
+
         return json({
           success: false,
           message:
-            "Terjadi kesalahan pada backend: " +
-            (error.message || "Kesalahan tidak diketahui."),
-          detail: error.message || null
+            "Backend gagal memproses video: " +
+            (error.message || "Kesalahan tidak diketahui.")
         }, 500);
       }
     }
 
-    // Memeriksa status pekerjaan
+    // Poll Runway task
     if (
-      url.pathname.startsWith("/api/tasks/") &&
+      path.startsWith("/api/tasks/") &&
       request.method === "GET"
     ) {
       if (!env.RUNWAY_API_KEY) {
@@ -288,8 +343,7 @@ export default {
         }, 500);
       }
 
-      const taskId =
-        url.pathname.split("/").pop();
+      const taskId = path.split("/").pop();
 
       if (!taskId) {
         return json({
@@ -311,11 +365,10 @@ export default {
           }
         );
 
-        const result =
-          await readApiResponse(response);
+        const result = await readApiResponse(response);
 
         if (!response.ok) {
-          return apiError(
+          return runwayError(
             "Gagal memeriksa status tugas Runway.",
             result,
             response.status
@@ -334,16 +387,19 @@ export default {
       }
     }
 
-    // Informasi umum backend
     return json({
       name: "LiveAction AI Backend",
       status: "online",
       endpoints: [
         "/health",
         "/api/jobs",
-        "/api/tasks/:id"
+        "/api/tasks/:id",
+        "/assets/:id"
       ]
     });
+  },
+
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(cleanupExpiredVideos(env));
   }
 };
-
