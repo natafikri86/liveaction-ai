@@ -24,12 +24,13 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/health") {
-      return json({
-        status: "ok",
-        service: "LiveAction AI Backend",
-        engine: env.RUNWAY_API_KEY ? "configured" : "missing_key"
-      });
-    }
+  return json({
+    status: "ok",
+    service: "LiveAction AI Backend",
+    engine: env.RUNWAY_API_KEY ? "configured" : "missing_key",
+    availableBindings: Object.keys(env)
+  });
+}
 
     if (url.pathname === "/api/jobs" && request.method === "GET") {
       return json({
