@@ -662,6 +662,7 @@ document.querySelectorAll("[data-page]").forEach(button => {
 });
 
 // Save project settings
+
 document.getElementById("startBtn").addEventListener("click", async function() {
   if (!videoInput.files.length) {
     alert("Silakan pilih video terlebih dahulu.");
@@ -675,7 +676,7 @@ document.getElementById("startBtn").addEventListener("click", async function() {
     style: selectedStyle,
     prompt: document.getElementById("prompt").value.trim(),
     createdAt: new Date().toLocaleString("id-ID"),
-    status: "Menghubungi backend..."
+    status: "Menunggu mesin AI"
   };
 
   const startBtn = document.getElementById("startBtn");
@@ -696,11 +697,11 @@ document.getElementById("startBtn").addEventListener("click", async function() {
 
     const result = await response.json();
 
-    if (!response.ok) {
-      throw new Error(result.message || "Backend menolak permintaan.");
+    if (response.ok) {
+      project.status = "Terkirim ke backend";
+    } else {
+      project.status = "Tersimpan lokal — AI belum terhubung";
     }
-
-    project.status = "Terkirim ke backend";
 
     projects.unshift(project);
 
@@ -709,21 +710,35 @@ document.getElementById("startBtn").addEventListener("click", async function() {
       JSON.stringify(projects)
     );
 
+    renderProjects();
+
     alert(
-      "Backend berhasil dihubungi!\n\n" +
+      "Proyek berhasil disimpan!\n\n" +
       "Nama video: " + project.fileName +
       "\nGaya: " + project.style +
       "\nStatus: " + project.status +
-      "\n\nRespons backend: " + (result.message || result.status || "Berhasil")
+      "\n\nRespons backend: " +
+      (result.message || result.status || "Tidak ada pesan")
+    );
+
+  } catch (error) {
+    project.status = "Tersimpan lokal — koneksi backend gagal";
+
+    projects.unshift(project);
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(projects)
     );
 
     renderProjects();
 
-  } catch (error) {
     alert(
-      "Belum berhasil menghubungi backend.\n\n" +
-      error.message
+      "Proyek berhasil disimpan di perangkat.\n\n" +
+      "Namun, backend belum dapat dihubungi.\n" +
+      "Pesan: " + error.message
     );
+
   } finally {
     startBtn.disabled = false;
     startBtn.textContent = "✨ Siapkan Transformasi";
