@@ -1,9 +1,18 @@
+
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "liveaction-ai-backend",
   "main": "worker.js",
   "compatibility_date": "2026-10-01",
-  "secrets": {
-    "required": ["RUNWAY_API_KEY"]
+  "r2_buckets": [
+    {
+      "binding": "VIDEO_BUCKET",
+      "bucket_name": "liveaction-ai-videos"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "0 * * * *"
+    ]
   }
 }
