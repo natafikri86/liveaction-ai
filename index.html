@@ -668,10 +668,6 @@ document.getElementById("startBtn").addEventListener("click", async function() {
     return;
   }
 
-  const button = document.getElementById("startBtn");
-  button.disabled = true;
-  button.textContent = "Menghubungkan ke backend...";
-
   const project = {
     id: Date.now().toString(),
     fileName: videoInput.files[0].name,
@@ -679,8 +675,12 @@ document.getElementById("startBtn").addEventListener("click", async function() {
     style: selectedStyle,
     prompt: document.getElementById("prompt").value.trim(),
     createdAt: new Date().toLocaleString("id-ID"),
-    status: "Mengirim pengaturan ke backend"
+    status: "Menghubungi backend..."
   };
+
+  const startBtn = document.getElementById("startBtn");
+  startBtn.disabled = true;
+  startBtn.textContent = "Menghubungi backend...";
 
   try {
     const response = await fetch(
@@ -700,7 +700,7 @@ document.getElementById("startBtn").addEventListener("click", async function() {
       throw new Error(result.message || "Backend menolak permintaan.");
     }
 
-    project.status = result.status || "Pengaturan diterima backend";
+    project.status = "Terkirim ke backend";
 
     projects.unshift(project);
 
@@ -710,10 +710,11 @@ document.getElementById("startBtn").addEventListener("click", async function() {
     );
 
     alert(
-      "Pengaturan berhasil dikirim ke backend!\n\n" +
-      "Mode: " + project.mode +
+      "Backend berhasil dihubungi!\n\n" +
+      "Nama video: " + project.fileName +
       "\nGaya: " + project.style +
-      "\nStatus: " + project.status
+      "\nStatus: " + project.status +
+      "\n\nRespons backend: " + (result.message || result.status || "Berhasil")
     );
 
     renderProjects();
@@ -724,8 +725,8 @@ document.getElementById("startBtn").addEventListener("click", async function() {
       error.message
     );
   } finally {
-    button.disabled = false;
-    button.textContent = "✨ Siapkan Transformasi";
+    startBtn.disabled = false;
+    startBtn.textContent = "✨ Siapkan Transformasi";
   }
 });
 
