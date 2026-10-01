@@ -1,4 +1,3 @@
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -15,24 +14,76 @@ function json(data, status = 200) {
   });
 }
 
+async function readApiResponse(response) {
+  const text = await response.text();
+
+  if (!text) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { rawResponse: text };
+  }
+}
+
+function getErrorMessage(data) {
+  if (!data) {
+    return "Tidak ada detail kesalahan dari layanan.";
+  }
+
+  if (typeof data === "string") {
+    return data;
+  }
+
+  return (
+    data.message ||
+    data.error ||
+    data.detail ||
+    data.title ||
+    JSON.stringify(data)
+  );
+}
+
+function apiError(message, detail, status = 502) {
+  const explanation = getErrorMessage(detail);
+
+  return json({
+    success: false,
+    message: message + " Detail: " + explanation,
+    detail: detail || null
+  }, status);
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders
+      });
     }
 
     const url = new URL(request.url);
 
+    // Pemeriksaan kesehatan backend
     if (url.pathname === "/health") {
-  return json({
-    status: "ok",
-    service: "LiveAction AI Backend",
-    engine: env.RUNWAY_API_KEY ? "configured" : "missing_key",
-    availableBindings: Object.keys(env)
-  });
-}
+      return json({
+        status: "ok",
+        service: "LiveAction AI Backend",
+        engine: env.RUNWAY_API_KEY
+          ? "configured"
+          : "missing_key",
+        availableBindings: Object.keys(env)
+      });
+    }
 
-    if (url.pathname === "/api/jobs" && request.method === "GET") {
+    // Informasi endpoint pekerjaan
+    if (
+      url.pathname === "/api/jobs" &&
+      request.method === "GET"
+    ) {
       return json({
         endpoint: "LiveAction AI Jobs",
         method: "POST",
@@ -41,7 +92,11 @@ export default {
       });
     }
 
-    if (url.pathname === "/api/jobs" && request.method === "POST") {
+    // Membuat pekerjaan transformasi video
+    if (
+      url.pathname === "/api/jobs" &&
+      request.method === "POST"
+    ) {
       if (!env.RUNWAY_API_KEY) {
         return json({
           success: false,
@@ -51,9 +106,10 @@ export default {
 
       try {
         const form = await request.formData();
-        const video = form.get("video");
 
-        const style = form.get("style") || "Cinematic Realism";
+        const video = form.get("video");
+        const style =
+          form.get("style") || "Cinematic Realism";
         const mode = form.get("mode") || "live";
         const userPrompt = form.get("prompt") || "";
 
@@ -87,13 +143,14 @@ export default {
           userPrompt
         ].filter(Boolean).join(" ");
 
-        // Minta URL upload sementara dari Runway
+        // Meminta URL upload sementara dari Runway
         const uploadResponse = await fetch(
           "https://api.dev.runwayml.com/v1/uploads",
           {
             method: "POST",
             headers: {
-              "Authorization": "Bearer " + env.RUNWAY_API_KEY,
+              "Authorization":
+                "Bearer " + env.RUNWAY_API_KEY,
               "Content-Type": "application/json",
               "X-Runway-Version": "2024-11-06"
             },
@@ -104,44 +161,72 @@ export default {
           }
         );
 
-        const uploadInfo = await uploadResponse.json();
+        const uploadInfo =
+          await readApiResponse(uploadResponse);
 
         if (!uploadResponse.ok) {
-          return json({
-            success: false,
-            message: "Runway gagal menyiapkan upload.",
-            detail: uploadInfo
-          }, uploadResponse.status);
+          return apiError(
+            "Runway gagal menyiapkan upload.",
+            uploadInfo,
+            uploadResponse.status
+          );
         }
 
-        // Kirim video ke penyimpanan sementara Runway
+        if (
+          !uploadInfo.uploadUrl ||
+          !uploadInfo.runwayUri
+        ) {
+          return apiError(
+            "Respons upload Runway tidak lengkap.",
+            uploadInfo,
+            502
+          );
+        }
+
+        // Mengirim video ke penyimpanan sementara Runway
         const uploadForm = new FormData();
 
-        for (const [key, value] of Object.entries(uploadInfo.fields || {})) {
+        for (
+          const [key, value] of Object.entries(
+            uploadInfo.fields || {}
+          )
+        ) {
           uploadForm.append(key, value);
         }
 
-        uploadForm.append("file", video, video.name || "input.mp4");
+        uploadForm.append(
+          "file",
+          video,
+          video.name || "input.mp4"
+        );
 
-        const fileUpload = await fetch(uploadInfo.uploadUrl, {
-          method: "POST",
-          body: uploadForm
-        });
+        const fileUpload = await fetch(
+          uploadInfo.uploadUrl,
+          {
+            method: "POST",
+            body: uploadForm
+          }
+        );
 
         if (!fileUpload.ok) {
-          return json({
-            success: false,
-            message: "Upload video ke Runway gagal."
-          }, 502);
+          const uploadError =
+            await readApiResponse(fileUpload);
+
+          return apiError(
+            "Upload video ke Runway gagal.",
+            uploadError,
+            502
+          );
         }
 
-        // Mulai proses transformasi
+        // Memulai transformasi video
         const taskResponse = await fetch(
           "https://api.dev.runwayml.com/v1/video_to_video",
           {
             method: "POST",
             headers: {
-              "Authorization": "Bearer " + env.RUNWAY_API_KEY,
+              "Authorization":
+                "Bearer " + env.RUNWAY_API_KEY,
               "Content-Type": "application/json",
               "X-Runway-Version": "2024-11-06"
             },
@@ -153,37 +238,58 @@ export default {
           }
         );
 
-        const task = await taskResponse.json();
+        const task =
+          await readApiResponse(taskResponse);
 
         if (!taskResponse.ok) {
-          return json({
-            success: false,
-            message: "Runway gagal memulai transformasi.",
-            detail: task
-          }, taskResponse.status);
+          return apiError(
+            "Runway gagal memulai transformasi.",
+            task,
+            taskResponse.status
+          );
+        }
+
+        if (!task.id) {
+          return apiError(
+            "Runway tidak mengembalikan ID tugas.",
+            task,
+            502
+          );
         }
 
         return json({
           success: true,
-          message: "Video diterima. Transformasi AI telah dimulai.",
+          message:
+            "Video diterima. Transformasi AI telah dimulai.",
           taskId: task.id,
-          status: "PENDING"
+          status: task.status || "PENDING"
         }, 202);
 
       } catch (error) {
         return json({
           success: false,
-          message: "Terjadi kesalahan pada backend.",
-          detail: error.message
+          message:
+            "Terjadi kesalahan pada backend: " +
+            (error.message || "Kesalahan tidak diketahui."),
+          detail: error.message || null
         }, 500);
       }
     }
 
+    // Memeriksa status pekerjaan
     if (
       url.pathname.startsWith("/api/tasks/") &&
       request.method === "GET"
     ) {
-      const taskId = url.pathname.split("/").pop();
+      if (!env.RUNWAY_API_KEY) {
+        return json({
+          success: false,
+          message: "RUNWAY_API_KEY belum dikonfigurasi."
+        }, 500);
+      }
+
+      const taskId =
+        url.pathname.split("/").pop();
 
       if (!taskId) {
         return json({
@@ -192,21 +298,43 @@ export default {
         }, 400);
       }
 
-      const response = await fetch(
-        "https://api.dev.runwayml.com/v1/tasks/" +
-          encodeURIComponent(taskId),
-        {
-          headers: {
-            "Authorization": "Bearer " + env.RUNWAY_API_KEY,
-            "X-Runway-Version": "2024-11-06"
+      try {
+        const response = await fetch(
+          "https://api.dev.runwayml.com/v1/tasks/" +
+            encodeURIComponent(taskId),
+          {
+            headers: {
+              "Authorization":
+                "Bearer " + env.RUNWAY_API_KEY,
+              "X-Runway-Version": "2024-11-06"
+            }
           }
-        }
-      );
+        );
 
-      const result = await response.json();
-      return json(result, response.status);
+        const result =
+          await readApiResponse(response);
+
+        if (!response.ok) {
+          return apiError(
+            "Gagal memeriksa status tugas Runway.",
+            result,
+            response.status
+          );
+        }
+
+        return json(result, response.status);
+
+      } catch (error) {
+        return json({
+          success: false,
+          message:
+            "Gagal menghubungi Runway: " +
+            (error.message || "Kesalahan tidak diketahui.")
+        }, 502);
+      }
     }
 
+    // Informasi umum backend
     return json({
       name: "LiveAction AI Backend",
       status: "online",
@@ -218,3 +346,4 @@ export default {
     });
   }
 };
+
