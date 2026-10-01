@@ -663,102 +663,99 @@ document.querySelectorAll("[data-page]").forEach(button => {
 
 // Save project settings
 
+
 document.getElementById("startBtn").addEventListener("click", async function() {
-
-if (!videoInput.files.length) {
-  alert("Silakan pilih video terlebih dahulu.");
-  return;
-}
-
-const videoFile = videoInput.files[0];
-
-const project = {
-  id: Date.now().toString(),
-  fileName: videoFile.name,
-  mode: selectedMode,
-  style: selectedStyle,
-  prompt: document.getElementById("prompt").value.trim(),
-  createdAt: new Date().toLocaleString("id-ID"),
-  status: "Menunggu mesin AI"
-};
-
-const startBtn = document.getElementById("startBtn");
-startBtn.disabled = true;
-startBtn.textContent = "Mengirim video...";
-
-try {
-  const formData = new FormData();
-
-  formData.append("video", videoFile);
-  formData.append("mode", project.mode);
-  formData.append("style", project.style);
-  formData.append("prompt", project.prompt);
-
-  const response = await fetch(
-    "https://liveaction-ai-backend.natafikri86.workers.dev/api/jobs",
-    {
-      method: "POST",
-      body: formData
-    }
-  );
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      result.message || "Backend menolak permintaan."
-    );
+  if (!videoInput.files.length) {
+    alert("Silakan pilih video terlebih dahulu.");
+    return;
   }
 
-  project.status = result.taskId
-    ? "AI sedang memproses"
-    : "Terkirim ke backend";
+  const video = videoInput.files[0];
 
-  project.taskId = result.taskId || null;
+  const project = {
+    id: Date.now().toString(),
+    fileName: video.name,
+    mode: selectedMode,
+    style: selectedStyle,
+    prompt: document.getElementById("prompt").value.trim(),
+    createdAt: new Date().toLocaleString("id-ID"),
+    status: "Mengirim video ke backend..."
+  };
 
-  projects.unshift(project);
+  const startBtn = document.getElementById("startBtn");
+  startBtn.disabled = true;
+  startBtn.textContent = "Mengirim video...";
 
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(projects)
-  );
+  try {
+    const formData = new FormData();
 
-  renderProjects();
+    formData.append("video", video);
+    formData.append("mode", selectedMode);
+    formData.append("style", selectedStyle);
+    formData.append(
+      "prompt",
+      document.getElementById("prompt").value.trim()
+    );
 
-  alert(
-    "Video berhasil dikirim ke backend!\n\n" +
-    "Nama video: " + project.fileName +
-    "\nGaya: " + project.style +
-    "\nStatus: " + project.status +
-    (project.taskId
-      ? "\nID tugas: " + project.taskId
-      : "") +
-    "\n\nPesan: " +
-    (result.message || "Permintaan diterima.")
-  );
+    const response = await fetch(
+      "https://liveaction-ai-backend.natafikri86.workers.dev/api/jobs",
+      {
+        method: "POST",
+        body: formData
+      }
+    );
 
-} catch (error) {
-  project.status = "Tersimpan lokal — " + error.message;
+    const result = await response.json();
 
-  projects.unshift(project);
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.message || "Backend gagal memproses permintaan."
+      );
+    }
 
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(projects)
-  );
+    project.status = "Transformasi AI dimulai";
+    project.taskId = result.taskId || null;
 
-  renderProjects();
+    projects.unshift(project);
 
-  alert(
-    "Proyek berhasil disimpan di perangkat.\n\n" +
-    "Namun, proses AI belum berhasil dimulai.\n" +
-    "Pesan: " + error.message
-  );
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(projects)
+    );
 
-} finally {
-  startBtn.disabled = false;
-  startBtn.textContent = "✨ Siapkan Transformasi";
-}
+    renderProjects();
+
+    alert(
+      "Video berhasil dikirim ke backend!\n\n" +
+      "Nama video: " + project.fileName +
+      "\nGaya: " + project.style +
+      "\nID tugas: " + (project.taskId || "Belum tersedia") +
+      "\nStatus: " + project.status
+    );
+
+  } catch (error) {
+    project.status = "Tersimpan lokal — pengiriman gagal";
+
+    projects.unshift(project);
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(projects)
+    );
+
+    renderProjects();
+
+    alert(
+      "Video belum berhasil diproses.\n\n" +
+      error.message +
+      "\n\nPengaturan proyek tetap disimpan di perangkat."
+    );
+
+  } finally {
+    startBtn.disabled = false;
+    startBtn.textContent = "✨ Siapkan Transformasi";
+  }
+});
 
 // Project history
 function renderProjects() {
